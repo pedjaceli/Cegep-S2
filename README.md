@@ -14,7 +14,7 @@ Dépôt personnel regroupant tous les travaux, laboratoires et notes de cours de
 | `NOMBRES_ET_STATISTIQUES` | Mathématiques et statistiques |
 | `OBJETS_CONNECTES` | Arduino, capteurs, PlatformIO (C++) |
 | `PHILOSOPHIE_1` | Introduction à la philosophie |
-| `PROGRAMMATION_ORIENTEE_OBJET` | POO en C++ |
+| `PROGRAMMATION_ORIENTEE_OBJET` | POO en C# |
 | `RESEAU_LOCAL_ET_SECURITE` | Réseaux et cybersécurité |
 
 ---
