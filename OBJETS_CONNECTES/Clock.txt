@@ -1,0 +1,57 @@
+#include <Arduino.h>
+#include <Wire.h>
+#include "DS1307.h"
+#include "Streaming.h"
+#include "ANSI.h"
+ANSI ansi(&Serial);
+ 
+char* AfficherLeTemps();
+ 
+DS1307 clock; // Définir un objet de type DS1307
+ 
+// Variable utilisée par sprintf()
+char chaine[120];
+const int interval=1000;
+const char* NomDesJours[] = {"", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
+const char* NomDesMois[] = {"", "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"};
+ 
+void setup()
+{
+  Serial.begin(9600);
+  ansi.clearScreen();
+  clock.begin();
+  /*
+  clock.fillByYMD(2021,10,26);
+  clock.fillByHMS(11,54,30);
+  clock.fillDayOfWeek(TUE);
+  clock.setTime(); //Écrire le temps dans la puce RTC
+  */
+} // setup
+ 
+void loop()
+{
+  static unsigned long previousMillis = 0;
+  unsigned long currentMillis = millis();
+ 
+  // Exécution de code non bloquant pour le clignotement de la LED
+  if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;
+    Serial << AfficherLeTemps() << endl;
+  }
+} // loop
+ 
+char* AfficherLeTemps()
+{
+  ansi.gotoXY(1, 1);
+  clock.getTime();
+  snprintf(chaine, sizeof(chaine),"Nous sommes \033[34m%s\033[0m, le %d %s 20%d et il est %02d\033[31m:\033[0m%02d\033[31m:\033[0m%02d",
+    NomDesJours[clock.dayOfWeek],
+    clock.dayOfMonth,
+    NomDesMois[clock.month],
+    clock.year, clock.hour, clock.minute, clock.second
+    );
+ 
+  return chaine;
+ 
+} // AfficherLeTemps
+ 

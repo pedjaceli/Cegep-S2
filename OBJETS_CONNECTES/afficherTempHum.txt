@@ -1,0 +1,22 @@
+#include <Arduino.h>
+#include <Wire.h>
+#include "SHT31.h"
+#include <Streaming.h>
+
+SHT31 sht31 = SHT31();
+
+void setup() {  
+  Serial.begin(115200);
+  while(!Serial);
+  Serial.println("begin...");  
+  sht31.begin();  
+}
+
+void loop() {
+  float temp = sht31.getTemperature();
+  float hum = sht31.getHumidity();
+  Serial << "Temp = " << temp << "C" << endl; 
+  Serial << "Hum = " << hum << "%" << endl; 
+  
+  delay(1000);
+}

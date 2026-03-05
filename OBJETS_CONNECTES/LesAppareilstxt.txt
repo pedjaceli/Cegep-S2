@@ -1,0 +1,72 @@
+#include <Arduino.h>
+#include "Streaming.h"
+ 
+enum LesAppareils {
+ APP_LED1             =    0b1 << 0, // 0000 0001
+ APP_LED2             =    0b1 << 1, // 0000 0010
+ APP_RELAI            =    0b1 << 2, // 0000 0100
+ APP_MOUVEMENT        =    0b1 << 3, // 0000 1000
+ ALARM_ARME           =    0b1 << 4, // 0001 0000
+ APP_BOUTON_PANIQUE   =    0b1 << 5, // 0001 0000
+ APP_RETRO_LCD        =    0b1 << 6  // 0001 0000
+};
+ 
+char * nomDesAppareils[] {
+  "APP_LED1          ",          
+  "APP_LED2          ",          
+  "APP_RELAI         ",        
+  "APP_MOUVEMENT     ",    
+  "ALARM_ARME        ",        
+  "APP_BOUTON_PANIQUE",
+  "APP_RETRO_LCD     ",    
+};
+ 
+enum CodeEvenement {
+  evenement_statut_appareils,
+  evenement_temperature_depassee,
+  evenement_detection_mouvement,
+  evenement_bouton_panique
+};
+ 
+struct Appareils{
+  byte  etatAppareils;  // Traitement sur les bits.
+  float temperature;
+  float humidite;
+};
+ 
+struct Systeme {
+  CodeEvenement  codeEvenement;
+  byte  heure;
+  byte  minute;
+  byte  seconde;
+  Appareils appareils;
+};
+ 
+const char * lesMessages[] = {
+  "Information sur le système",
+  "Température élevée",
+  "Mouvement détecté",
+  "En état de panique"
+};
+ 
+Systeme unSysteme =  { evenement_detection_mouvement, 10, 10, 59, { 0b01010101, 20.2, 45.25} };
+ 
+void setup() {
+  Serial.begin(115200);
+  Serial.println("Début du programme\n");
+  
+  // Afficher l'état des appareils dans une boucle:
+  for (int positionBit = 0; positionBit < 7; positionBit++) {
+      Serial << "Appareil: "
+             << nomDesAppareils[positionBit] << "\t"
+             << (unSysteme.appareils.etatAppareils & 0b1 << positionBit ?"🟢": "🔴")
+             << endl;
+  }
+ 
+  Serial << "\nMessage reçu: " << lesMessages[unSysteme.codeEvenement] << endl;
+  Serial << "Il est " << unSysteme.heure << ":" << unSysteme.minute << ":" << unSysteme.seconde << endl;
+}
+ 
+void loop() {
+  // Rien à faire ici ...
+}
