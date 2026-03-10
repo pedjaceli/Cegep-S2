@@ -1,0 +1,140 @@
+namespace Formatif1
+{
+    public enum VehicleType
+    {
+        Car,
+        Motorcycle,
+        Truck
+    }
+
+    /// <summary>
+    /// Conteneur de tous les véhicules
+    /// </summary>
+    class Inventory
+    {
+        /// <summary>
+        /// Constructeur — lit le fichier et remplit les listes
+        /// </summary>
+        /// <exception cref="FileNotFoundException">Si le fichier est introuvable</exception>
+        public Inventory(string? fileName)
+        {
+            try
+            {
+                using (StreamReader input = new($"../../../{fileName}.txt"))
+                {
+                    string? line = input.ReadLine();
+                    int lineNumber = 0;
+
+                    while (line != null)
+                    {
+                        lineNumber++;
+
+                        if (line.Length > 0 && !line.TrimStart().StartsWith(Comment))
+                        {
+                            try
+                            {
+                                string[] values = line.Split(Separator);
+                                string type = values[0].Trim();
+
+                                switch (type)
+                                {
+                                    case "V":
+                                        _cars.Add(new Car(values));
+                                        break;
+                                    case "M":
+                                        _motorcycles.Add(new Motorcycle(values));
+                                        break;
+                                    case "C":
+                                        _trucks.Add(new Truck(values));
+                                        break;
+                                    default:
+                                        throw new InvalidDataException("Type invalide");
+                                }
+                            }
+                            catch (Exception exception)
+                            {
+                                Console.WriteLine($"Ligne {lineNumber} invalide: {exception.Message}");
+                            }
+                        }
+
+                        line = input.ReadLine();
+                    }
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                throw new FileNotFoundException($"Impossible d'ouvrir le fichier '{fileName}.txt'");
+            }
+        }
+
+
+        /// <summary>
+        /// Valide et retourne le type de véhicule correspondant à la saisie
+        /// </summary>
+        /// <exception cref="ArgumentException">Si le type est invalide</exception>
+        public static VehicleType ValidateType(string? input)
+        {
+            switch (input?.Trim().ToUpper())
+            {
+                case "V": return VehicleType.Car;
+                case "M": return VehicleType.Motorcycle;
+                case "C": return VehicleType.Truck;
+                default:
+                    throw new ArgumentException("Type de véhicule invalide");
+            }
+        }
+
+
+        /// <summary>
+        /// Affiche l'inventaire selon le type voulu
+        /// </summary>
+        public void Consult(VehicleType type)
+        {
+            Console.Clear();
+            switch (type)
+            {
+                case VehicleType.Car:
+                    PrintHeader("voiture", _cars.Count);
+                    foreach (var item in _cars)
+                    {
+                        item.Print();
+                        Console.WriteLine("----------------------------------------");
+                    }
+                    break;
+                case VehicleType.Motorcycle:
+                    PrintHeader("moto", _motorcycles.Count);
+                    foreach (var item in _motorcycles)
+                    {
+                        item.Print();
+                        Console.WriteLine("----------------------------------------");
+                    }
+                    break;
+                case VehicleType.Truck:
+                    PrintHeader("camion", _trucks.Count);
+                    foreach (var item in _trucks)
+                    {
+                        item.Print();
+                        Console.WriteLine("----------------------------------------");
+                    }
+                    break;
+            }
+        }
+
+
+        // Affiche l'en-tête de l'inventaire
+        private void PrintHeader(string name, int quantity)
+        {
+            string title = $"{quantity} {name}{(quantity > 1 ? "s" : "")} en inventaire";
+            Console.WriteLine(title);
+            Console.WriteLine(new string('-', title.Length));
+        }
+
+
+        private const string Comment = "#";
+        private const string Separator = ";";
+
+        private readonly List<Car> _cars = new();
+        private readonly List<Motorcycle> _motorcycles = new();
+        private readonly List<Truck> _trucks = new();
+    }
+}

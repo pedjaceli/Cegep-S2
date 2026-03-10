@@ -1,0 +1,25 @@
+namespace Formatif1
+{
+    class Truck : Vehicle
+    {
+        /// <summary>
+        /// Constructeur à partir d'une ligne du fichier
+        /// </summary>
+        /// <exception cref="InvalidDataException">Si les données sont invalides</exception>
+        public Truck(string[] values) : base(values, ExpectedLength)
+        {
+            int wheelNumber = VerifyInt(values[5]);
+            _wheelNumber = wheelNumber;
+        }
+
+        public void Print()
+        {
+            PrintCommon();
+            Console.WriteLine($"{"Nombre de roues",16}: {_wheelNumber}");
+        }
+
+        private const int ExpectedLength = 6;
+
+        private readonly int _wheelNumber;
+    }
+}
