@@ -1,0 +1,38 @@
+namespace Formatif1
+{
+    class Car : Vehicle
+    {
+        /// <summary>
+        /// Constructeur à partir d'une ligne du fichier
+        /// </summary>
+        /// <exception cref="InvalidDataException">Si les données sont invalides</exception>
+        public Car(string[] values) : base(values, ExpectedLength)
+        {
+            string fuel = values[5].Trim();
+            string transmission = values[6].Trim();
+
+            VerifyString(fuel);
+            VerifyString(transmission);
+
+            int doorNumber = VerifyInt(values[7]);
+
+            _fuel = fuel;
+            _transmission = transmission;
+            _doorNumber = doorNumber;
+        }
+
+        public void Print()
+        {
+            PrintCommon();
+            Console.WriteLine($"{"Carburant",16}: {_fuel}");
+            Console.WriteLine($"{"Transmission",16}: {_transmission}");
+            Console.WriteLine($"{"Nombre de portes",16}: {_doorNumber}");
+        }
+
+        private const int ExpectedLength = 8;
+
+        private readonly string _fuel;
+        private readonly string _transmission;
+        private readonly int _doorNumber;
+    }
+}

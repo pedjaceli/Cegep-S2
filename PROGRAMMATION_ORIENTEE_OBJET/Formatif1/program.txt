@@ -1,0 +1,26 @@
+// Affichage de l'inventaire d'un concessionnaire de véhicules d'occasion
+using Formatif1;
+
+try
+{
+    Console.WriteLine("Inventaire Occasion Saint-Jérôme\n--------------------------------\n");
+
+    Console.Write("Indiquez le nom du fichier d'inventaire: ");
+    Inventory inventory = new(Console.ReadLine());
+
+    VehicleType type = AskType();
+    inventory.Consult(type);
+}
+catch (Exception exception)
+{
+    Console.WriteLine(exception.Message);
+}
+
+
+// Demande et retourne le type de vehicule voulu
+VehicleType AskType()
+{
+    Console.Write("\n\nIndiquez le type de véhicule voulu\n (V)oiture, (M)oto, (C)amion > ");
+    string type = Console.ReadLine();
+    return Inventory.ValidateType(type);
+}

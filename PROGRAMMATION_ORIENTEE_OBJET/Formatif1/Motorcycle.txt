@@ -1,0 +1,32 @@
+namespace Formatif1
+{
+    class Motorcycle : Vehicle
+    {
+        /// <summary>
+        /// Constructeur à partir d'une ligne du fichier
+        /// </summary>
+        /// <exception cref="InvalidDataException">Si les données sont invalides</exception>
+        public Motorcycle(string[] values) : base(values, ExpectedLength)
+        {
+            string category = values[5].Trim();
+            VerifyString(category);
+
+            int motorSize = VerifyInt(values[6]);
+
+            _category = category;
+            _motorSize = motorSize;
+        }
+
+        public void Print()
+        {
+            PrintCommon();
+            Console.WriteLine($"{"Catégorie",16}: {_category}");
+            Console.WriteLine($"{"Moteur",16}: {_motorSize} cc");
+        }
+
+        private const int ExpectedLength = 7;
+
+        private readonly string _category;
+        private readonly int _motorSize;
+    }
+}

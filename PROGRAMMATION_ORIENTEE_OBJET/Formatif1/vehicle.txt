@@ -1,0 +1,63 @@
+namespace Formatif1
+{
+    class Vehicle
+    {
+        /// <summary>
+        /// Constructeur à partir d'une ligne du fichier
+        /// </summary>
+        /// <exception cref="InvalidDataException">Si les données sont invalides</exception>
+        public Vehicle(string[] values, int expectedLength)
+        {
+            if (values.Length != expectedLength)
+                throw new InvalidDataException("Mauvais nombre d'éléments");
+
+            string model = values[1].Trim();
+            VerifyString(model);
+
+            int year = VerifyInt(values[2], true);
+            int km = VerifyInt(values[3], true);
+            double price = VerifyDouble(values[4]);
+
+            _model = model;
+            _year = year;
+            _kilometers = km;
+            _price = price;
+        }
+
+        // Vérifie que la chaîne n'est pas vide — lance une exception si invalide
+        protected static void VerifyString(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                throw new InvalidDataException("Chaine vide");
+        }
+
+        // Convertit et vérifie que l'entier est positif — lance une exception si invalide
+        protected static int VerifyInt(string value, bool strictlyPositive = true)
+        {
+            if (!int.TryParse(value.Trim(), out int result) || (strictlyPositive && result <= 0))
+                throw new InvalidDataException("Entier invalide");
+            return result;
+        }
+
+        // Convertit et vérifie que le double est positif — lance une exception si invalide
+        protected static double VerifyDouble(string value)
+        {
+            if (!double.TryParse(value.Trim(), out double result) || result <= 0)
+                throw new InvalidDataException("Entier invalide");
+            return result;
+        }
+
+        protected void PrintCommon()
+        {
+            Console.WriteLine($"{_model}");
+            Console.WriteLine($"{"Année",16}: {_year}");
+            Console.WriteLine($"{"Kilométrage",16}: {_kilometers}");
+            Console.WriteLine($"{"Prix",16}: {_price:N2} $");
+        }
+
+        private readonly string _model;
+        private readonly int _year;
+        private readonly int _kilometers;
+        private readonly double _price;
+    }
+}
