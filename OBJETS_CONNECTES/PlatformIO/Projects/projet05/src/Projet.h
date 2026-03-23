@@ -20,7 +20,7 @@
 #define ANSI_BLEU           "\033[34m"
 #define ANSI_JAUNE          "\033[33m"
 #define ANSI_BLANC          "\033[0m"
-#define ANSI_FOND_BLEU      "\033[44m"
+#define ANSI_FOND_BLEU      "\033[104m"
 #define CURSEUR_ON          "\033[?25h"
 #define CURSEUR_OFF         "\033[?25l"
 

@@ -296,7 +296,9 @@ void setup() {
     ansi.clearScreen();
     Serial << CURSEUR_OFF << ANSI_BLANC;
     Serial << F("╔═══════════════════════════════════════════════════════════════════╗\n");
-    Serial << F("║           Station de contrôle 420-1C4 version 2.0                 ║\n");
+    Serial << F("║"); Serial << ANSI_FOND_BLEU << ANSI_BLANC;
+    Serial << F("           Station de contrôle 420-1C4 version 2.0                 ");
+    Serial << ANSI_BLANC << F("║\n");
     Serial << F("╟───────────────────────────────────────────────────────────────────╢\n");
     Serial << F("║ 1 - LED1  sur "); Serial << ANSI_BLEU << F("D2") << ANSI_BLANC;
     Serial << F("                                                  ║\n");
