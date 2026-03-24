@@ -63,7 +63,7 @@ void gererDetecteurMouvement();
 
 // ============================================================
 // afficherOnOff()
-// Affiche ON (vert) ou OFF (rouge) a la position (posX, posY)
+// Affiche ON (vert) ou OFF (rouge) à la position (posX, posY)
 // ============================================================
 void afficherOnOff(int posX, int posY, bool on) {
     ansi.gotoXY(posX, posY);
@@ -76,28 +76,23 @@ void afficherOnOff(int posX, int posY, bool on) {
 
 // ============================================================
 // afficherActifDesactif()
-// Affiche Activé (vert) ou Désactivé (rouge) a la position
 // ============================================================
 void afficherActifDesactif(int posX, int posY, bool actif) {
     ansi.gotoXY(posX, posY);
+    Serial << ANSI_BLANC;
     if (actif) {
-        Serial << ANSI_VERT  << F("Active    ") << ANSI_BLANC;
+        Serial << F("Activé    ");
     } else {
-        Serial << ANSI_ROUGE << F("Desactive ") << ANSI_BLANC;
+        Serial << F("Desactivé ");
     }
 } // afficherActifDesactif()
 
 // ============================================================
 // afficherUniteTemperature()
-// Affiche C (vert) ou F (jaune) pour l'unite de temperature
 // ============================================================
 void afficherUniteTemperature() {
     ansi.gotoXY(COL_ONOFF, LIGNE_CELCIUS_FAHRENHEIT);
-    if (affichageCelcius) {
-        Serial << ANSI_VERT  << F("C  ") << ANSI_BLANC;
-    } else {
-        Serial << ANSI_JAUNE << F("F  ") << ANSI_BLANC;
-    }
+    Serial << ANSI_BLANC << (affichageCelcius ? F("C  ") : F("F  "));
 } // afficherUniteTemperature()
 
 // ============================================================
@@ -147,7 +142,7 @@ void afficherTempsEcoule() {
     char bufferTemps[15];
 
     snprintf(bufferNbJours, sizeof(bufferNbJours), "%lu ", jours);
-    snprintf(bufferMot,     sizeof(bufferMot),     "jour%s  ", (jours == 1 ? "" : "s"));
+    snprintf(bufferMot,     sizeof(bufferMot),     "jour%s  ", (jours == 1 ? "" : "(s)"));
     snprintf(bufferTemps,   sizeof(bufferTemps),   "%02d:%02d:%02lu", heures, minutes, secondes);
 
     ansi.gotoXY(COL_TEMPS, LIGNE_TEMPS);
@@ -186,7 +181,7 @@ void afficherRTC() {
              horloge.hour, horloge.minute, horloge.second);
 
     ansi.gotoXY(2, LIGNE_RTC);
-    Serial << ANSI_FOND_BLEU << ANSI_BLANC;
+    Serial << ANSI_FOND_BLEU;
     Serial << F(" Nous sommes ") << bufferJour;
     Serial << F(", le ")         << bufferDate;
     Serial << F(" ")             << bufferMois;
@@ -208,7 +203,7 @@ void lirePotentiometre() {
     char buffer[10];
     snprintf(buffer, sizeof(buffer), "%d ms  ", delaiMs);
     ansi.gotoXY(COL_TEMP_VAL, LIGNE_POT);
-    Serial << ANSI_VERT << buffer << ANSI_BLANC;
+    Serial << ANSI_BLANC << buffer;
 
 } // lirePotentiometre()
 
@@ -220,7 +215,7 @@ void gererDetecteurMouvement() {
     if (!detecteurActif) return;
 
     if (digitalRead(PIN_PIR) == HIGH) {
-        // Mouvement détecté — alarme !
+        // Mouvement détecté - alarme !
         afficherOnOff(COL_TEMP_VAL, LIGNE_ALARME, true);
 
         // LCD rouge + message alarme
@@ -231,7 +226,7 @@ void gererDetecteurMouvement() {
         // Sonner le buzzer
         digitalWrite(PIN_BUZZER, HIGH);
 
-        // Attendre que le mouvement revienne a OFF
+        // Attendre que le mouvement revienne à OFF
         while (digitalRead(PIN_PIR) == HIGH);
 
         // Retablir l'etat normal
@@ -276,8 +271,6 @@ void setup() {
     // Initialisation RTC
     horloge.begin();
 
-    // *** Décommenter #define SET_TIME pour régler l'heure ***
-    // *** Puis remettre en commentaire et retéléverser      ***
     // #define SET_TIME
     #ifdef SET_TIME
         horloge.fillByYMD(2026, 3, 21);  // Année, Mois, Jour
@@ -296,7 +289,7 @@ void setup() {
     ansi.clearScreen();
     Serial << CURSEUR_OFF << ANSI_BLANC;
     Serial << F("╔═══════════════════════════════════════════════════════════════════╗\n");
-    Serial << F("║"); Serial << ANSI_FOND_BLEU << ANSI_BLANC;
+    Serial << F("║"); Serial << ANSI_FOND_BLEU;
     Serial << F("           Station de contrôle 420-1C4 version 2.0                 ");
     Serial << ANSI_BLANC << F("║\n");
     Serial << F("╟───────────────────────────────────────────────────────────────────╢\n");
@@ -308,22 +301,22 @@ void setup() {
     Serial << F("                                                  ║\n");
     Serial << F("║ 4 - Celcius/Fahrenheit sur "); Serial << ANSI_BLEU << F("I2C") << ANSI_BLANC;
     Serial << F("                                    ║\n");
-    Serial << F("║ 5 - Detecteur de mouvement sur "); Serial << ANSI_BLEU << F("D5") << ANSI_BLANC;
-    Serial << F(" (BTN "); Serial << ANSI_BLEU << F("D7") << ANSI_BLANC;
+    Serial << F("║ 5 - Détecteur de mouvement sur "); Serial << ANSI_BLEU << F("D5") << ANSI_BLANC;
+    Serial << F(" (BTN "); Serial << ANSI_BLANC << F("D7");
     Serial << F(": ON/OFF)                ║\n");
-    Serial << F("║ 6 - LCD Retro-eclairage                                           ║\n");
+    Serial << F("║ 6 - LCD Rétro-éclairage                                           ║\n");
     Serial << F("╟───────────────────────────────────────────────────────────────────╢\n");
-    Serial << F("║ Detecteur de mouvement : Alarme sur "); Serial << ANSI_BLEU << F("D6") << ANSI_BLANC;
+    Serial << F("║ Détecteur de mouvement : Alarme sur "); Serial << ANSI_BLANC << F("D6");
     Serial << F("                            ║\n");
-    Serial << F("║ Temperature            :                                          ║\n");
-    Serial << F("║ Humidite               :                                          ║\n");
-    Serial << F("║ Potentiometre          : Delai d'affichage                        ║\n");
+    Serial << F("║ Température            :                                          ║\n");
+    Serial << F("║ Humidité               :                                          ║\n");
+    Serial << F("║ Potentiomètre          : Délai d'affichage                        ║\n");
     Serial << F("╟───────────────────────────────────────────────────────────────────╢\n");
-    Serial << F("║ Temps ecoule:                                        Option:      ║\n");
+    Serial << F("║ Temps écoulé:                                        Option:      ║\n");
     Serial << F("╟───────────────────────────────────────────────────────────────────╢\n");
     Serial << F("║                                                                   ║\n");
     Serial << F("╟───────────────────────────────────────────────────────────────────╢\n");
-    Serial << F("║ Projet realise par Yannick Kananin               TP01-Partie 02   ║\n");
+    Serial << F("║ Projet réalisé par Yannick Kananin               TP01-Partie 02   ║\n");
     Serial << F("╚═══════════════════════════════════════════════════════════════════╝\n");
 
     // Affichage initial des etats
@@ -368,7 +361,7 @@ void loop() {
         if (commande == '5') {
             detecteurActif = !detecteurActif;
             afficherActifDesactif(COL_ONOFF, LIGNE_PIR, detecteurActif);
-            // Mettre a jour le LCD
+            // Mettre à jour le LCD
             lcd.setCursor(LCD_PREMIERE_COL, LCD_LIGNE1);
             if (detecteurActif) {
                 lcd.print(F("Alarme : ON     "));
@@ -388,10 +381,10 @@ void loop() {
 
         // Afficher la touche saisie
         ansi.gotoXY(COL_OPTION, LIGNE_OPTION);
-        Serial << ANSI_JAUNE << commande << ANSI_BLANC;
+        Serial << ANSI_BLEU << commande << ANSI_BLANC;
     }
 
-    // Lecture du bouton D7 — meme fonction que touche 5
+    // Lecture du bouton D7
     static bool dernierEtatBouton = LOW;
     bool etatBouton = digitalRead(PIN_BOUTON);
     if (etatBouton == HIGH && dernierEtatBouton == LOW) {
