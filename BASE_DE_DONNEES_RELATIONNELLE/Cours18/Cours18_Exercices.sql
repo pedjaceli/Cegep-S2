@@ -23,7 +23,7 @@ La liste des tables :
 
 -- Les champs: le numéro du cours, le titre du cours et la durée en minutes du cours.
 -- -------------------------------------------------------------------------------------------------------------------------
--- Partie 3 : Table Cours
+-- Partie 3 : Table Inscriptions
 
 -- Les champs: le numéro du membre, le numéro du cours et un champ qui prend automatiquement la date et l'heure de l'inscription.
 -- Attention, un membre ne peut pas s'inscrire 2 fois au même cours!
