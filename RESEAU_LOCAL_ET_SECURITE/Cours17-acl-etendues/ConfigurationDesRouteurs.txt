@@ -1,0 +1,109 @@
+!ROUTEUR0
+no access-list 100
+access-list 100 permit ip 192.168.51.0 0.0.0.255 any
+access-list 100 permit ip 192.168.200.0 0.0.0.255 any
+access-list 100 permit ip host 192.168.201.50 any
+access-list 100 permit ip host 192.168.60.254 any
+
+!Accès à l'imprimante
+access-list 100 permit ip host 192.168.80.201 any
+
+!SerwerWebInterne
+access-list 100 permit ip host 192.168.201.30 any
+
+!ServerTravail
+access-list 100 permit ip host 192.168.201.52 any
+
+access-list 100 deny ip 192.168.0.0 0.0.255.255 any
+access-list 100 permit ip any any
+
+no access-list 101
+access-list 101 permit ip host 192.168.200.5 any
+access-list 101 permit ip host 192.168.201.51 any
+access-list 101 permit ip 192.168.61.0 0.0.0.255 any
+access-list 101 permit ip 192.168.60.0 0.0.0.255 any
+access-list 101 permit ip 192.168.0.0 0.0.255.255 host 192.168.60.254
+
+!SerwerWebInterne
+access-list 101 permit ip host 192.168.201.30 any
+
+!ServerData
+access-list 101 permit ip host 192.168.201.53 any
+access-list 101 deny ip any any
+
+
+!ROUTEUR2
+no access-list 100
+access-list 100 permit ip 192.168.51.0 0.0.0.255 any
+access-list 100 permit ip 192.168.50.0 0.0.0.255 any
+access-list 100 permit ip 192.168.0.0 0.0.255.255 any
+access-list 100 permit ip host 192.168.201.50 any
+access-list 100 permit ip host 192.168.60.254 any
+
+!Accès à l'imprimante
+access-list 100 permit ip host 192.168.80.201 any
+
+!SerwerWebInterne
+access-list 100 permit ip host 192.168.201.30 any
+
+!ServerTravail
+access-list 100 permit ip host 192.168.201.52 any
+
+access-list 100 deny ip 192.168.0.0 0.0.255.255 any
+access-list 100 permit ip any any
+
+access-list 102 permit ip 192.168.0.0 0.0.255.255 host 192.168.80.201
+
+!ROUTEURPRINCIPAL
+access-list 1 permit 192.168.0.0 0.0.255.255
+
+no access-list 100
+access-list 100 permit udp any host 192.168.200.5
+access-list 100 permit icmp any host 192.168.200.5
+
+!SerwerWebPublic
+access-list 100 permit tcp any host 192.168.200.100 eq 80
+access-list 100 permit udp any host 192.168.200.100 eq 80
+access-list 100 permit tcp any host 192.168.200.100 eq 443
+access-list 100 permit udp any host 192.168.200.100 eq 443
+access-list 100 permit icmp any host 192.168.200.100
+
+!SerwerMapPublic
+access-list 100 permit tcp any host 192.168.200.101 eq 443
+access-list 100 permit udp any host 192.168.200.101 eq 443
+access-list 100 permit icmp any host 192.168.200.101
+
+no access-list 101
+access-list 101 permit tcp 192.168.50.0 0.0.0.255 host 192.168.201.50 eq www
+access-list 101 permit tcp 192.168.51.0 0.0.0.255 host 192.168.201.50 eq www
+access-list 101 permit icmp 192.168.51.0 0.0.0.255 host 192.168.201.50
+access-list 101 permit icmp 192.168.50.0 0.0.0.255 host 192.168.201.50
+access-list 101 permit tcp 192.168.60.0 0.0.0.255 host 192.168.201.51 eq 20
+access-list 101 permit udp 192.168.60.0 0.0.0.255 host 192.168.201.51 eq 20
+access-list 101 permit tcp 192.168.60.0 0.0.0.255 host 192.168.201.51 eq ftp
+access-list 101 permit icmp 192.168.60.0 0.0.0.255 host 192.168.201.51
+
+!SerwerWebInterne
+access-list 101 permit tcp 192.168.50.0 0.0.0.255 host 192.168.201.30 eq 80
+access-list 101 permit tcp 192.168.51.0 0.0.0.255 host 192.168.201.30 eq 80
+access-list 101 permit tcp 192.168.50.0 0.0.0.255 host 192.168.201.30 eq 443
+access-list 101 permit tcp 192.168.51.0 0.0.0.255 host 192.168.201.30 eq 443
+
+!ServerTravail
+access-list 101 permit tcp 192.168.50.0 0.0.0.255 host 192.168.201.52 eq 22
+access-list 101 permit tcp 192.168.51.0 0.0.0.255 host 192.168.201.52 eq 22
+
+
+!SerwerWebInterne
+access-list 101 permit tcp 192.168.60.0 0.0.0.255 host 192.168.201.30 eq 80
+access-list 101 permit tcp 192.168.60.0 0.0.0.255 host 192.168.201.30 eq 443
+
+!ServerData
+access-list 101 permit tcp 192.168.60.0 0.0.0.255 host 192.168.201.53 eq 20
+access-list 101 permit udp 192.168.60.0 0.0.0.255 host 192.168.201.53 eq 20
+access-list 101 permit tcp 192.168.60.0 0.0.0.255 host 192.168.201.53 eq 21
+access-list 101 deny ip any any
+
+no access-list 199
+access-list 199 deny ip host 45.110.87.5 any
+access-list 199 permit ip any any

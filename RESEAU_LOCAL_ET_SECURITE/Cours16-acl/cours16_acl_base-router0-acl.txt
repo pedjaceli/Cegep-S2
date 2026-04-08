@@ -1,0 +1,47 @@
+! ### VLAN PROGRAMMEURS ###
+! ### Supprimer la liste ACL 25
+no access-list 25
+
+! ### Appliquer sur le port en out ###
+interface GigabitEthernet0/0/0.30
+ip access-group 25 out
+exit
+
+! ### Créer la liste ACL 25 ###
+! Server DNS
+access-list 25 permit host 192.168.100.5
+! Server Web Public
+access-list 25 permit host 192.168.100.10
+! Server Programmeurs
+access-list 25 permit host 192.168.100.11
+
+###! VLAN Artistes####
+access-list 25 permit 192.168.40.0 0.0.0.255
+! Bloquer le reste du réseau
+access-list 25 deny 192.168.0.0 0.0.255.255
+! Permettre accès à internet
+access-list 25 permit any
+! ############################
+
+### VLAN DESIGNERS ###
+access-list 25 permit host 192.168.100.5
+access-list 25 permit host 192.168.100.10
+access-list 25 permit host 192.168.100.11
+access-list 25 permit 192.168.40.0 0.0.0.255
+access-list 25 deny 192.168.0.0 0.0.255.255
+access-list 25 permit any
+access-list 70 permit 192.168.30.0 0.0.0.255
+access-list 70 permit 192.168.40.0 0.0.0.255
+access-list 70 permit 192.168.50.0 0.0.0.255
+access-list 70 permit any
+access-list 10 permit host 192.168.100.5
+access-list 10 permit host 192.168.100.10
+access-list 99 permit any
+access-list 30 permit 192.168.100.0 0.0.0.255
+access-list 30 permit 192.168.50.0 0.0.0.255
+access-list 30 deny 192.168.0.0 0.0.255.255
+access-list 30 permit any
+access-list 40 permit 192.168.100.0 0.0.0.255
+access-list 40 deny 192.168.0.0 0.0.255.255
+access-list 40 permit 192.168.40.0 0.0.0.255
+access-list 40 permit any

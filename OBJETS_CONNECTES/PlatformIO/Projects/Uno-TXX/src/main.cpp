@@ -1,40 +1,66 @@
 /*
-  Relier deux Arduino via le port UART physique
-  Code du transmetteur - sur le UNO
-  NOTE: Il est important d'utiliser le câble avec les fils blanc et jaune inversés
-  */
+    Arduino UNO 
+    Le transmetteur, via SoftwareSerial sur D7 et D6
+*/
 
 #include <Arduino.h>
-#include "rgb_lcd.h"
+#include <SoftwareSerial.h>
 #include "Streaming.h"
 
-#define UART_RX             6
-#define UART_TX             7
-#define UART_VITESSE        9600
-#define MAX_NB_ALEATOIRE    99
-#define UNE_SECONDE         1000
-#define LCD_DEUXIEME_LIGNE  1
-#define LCD_NB_LIGNE        2
-#define LCD_NB_COL          16
-#define transmetteur        Serial
+#define DELAI_ENTRE_TRANSMISSION  1000
 
-rgb_lcd lcd;
+// Définir les pins pour la communication SoftwareSerial
+SoftwareSerial lienAvecRecepteur(7, 6); // RX, TX
 
-//--------------------------------------------------------
+struct Temps {
+  uint8_t heure;
+  uint8_t minute;
+  uint8_t seconde;
+};
+
+struct lesDonnees {
+  int id;
+  char ip[16];           // Taille maximale de l'IP en format texte
+  char description[10];  // Taille maximale de la description
+  Temps heure;
+}; // 31 octets 
+
+// Exemple d'utilisation
+lesDonnees mesDonnees = {1, "10.10.0.1", "E0000001", {0, 0, 0}};
+
+// ----------------------------------------------------------------
 void setup() {
-  // port natif utilisé pour la transmission vers le Mega
-  transmetteur.begin(UART_VITESSE); 
-  lcd.begin(LCD_NB_COL,LCD_NB_LIGNE);
-  lcd.print("Transmetteur");
-} // setup()
+  // Initialiser la communication série avec l'ordinateur
+  // Pour les traces au moniteur
+  Serial.begin(9600);
+  
+  // Initialiser la communication SoftwareSerial vers le récepteur
+  lienAvecRecepteur.begin(57600);
+  
+  Serial << "Démarrage de la transmission des données...\n";
+} // setup
 
-//--------------------------------------------------------
+// ----------------------------------------------------------------
 void loop() {
-   // Transmettre un code à chaque seconde  
-   // générer un nombre entre 0 et MAX_NB_ALEATOIRE - 1
-   byte unCode = random(MAX_NB_ALEATOIRE); 
-   transmetteur.write(unCode);
-   lcd.setCursor(0, LCD_DEUXIEME_LIGNE);
-   lcd << "Envoi de: " << unCode;
-   delay(UNE_SECONDE);
-} // loop()
+  static int compteur=0;
+  mesDonnees.id = compteur++;
+  Serial << "\nid: " << mesDonnees.id << "\nIP: " << mesDonnees.ip << "\nDescription: " << mesDonnees.description << endl;
+  // Envoyer les données via SoftwareSerial
+  // (byte*)&mesDonnees -> passe la localisation de la structure en mémoire,
+  // et indique de la traiter comme une série d'octets
+  lienAvecRecepteur.write((byte*)&mesDonnees, sizeof(mesDonnees));
+  Serial << "Octets envoyés: " << sizeof(mesDonnees) << endl;
+
+  // À l'occasion, simuler une erreur de transmission
+  // avec une autre transmission sans délai, de mesDonnees-1.
+  if (random(0, 100) < 10) {
+    lienAvecRecepteur.write((byte*)&mesDonnees, sizeof(mesDonnees)-1);
+    Serial << "Erreur de transmission: " << sizeof(mesDonnees)-1 << " octets envoyés.\n";
+    delay(DELAI_ENTRE_TRANSMISSION); 
+  } // Ce qui va totaliser 55 (27+28) octets coté récepteur, au lieu de 28 octets
+
+  // Attendre un peu avant de renvoyer les données
+  // Si ce délai est trop court, il risque d'avoir une congestion à niveau du récepteur.
+  // Faites des tests de fiabilité.
+  delay(DELAI_ENTRE_TRANSMISSION); // 1 seconde d'attente
+} // loop
