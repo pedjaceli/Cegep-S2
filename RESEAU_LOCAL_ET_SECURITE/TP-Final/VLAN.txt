@@ -1,0 +1,106 @@
+-------
+ÉTAGE 1
+-------
+
+VLAN : 9
+========
+Nom : Classe_Informatique 
+Réseau : 192.168.9.0/24
+Classe Informatique 1
+Classe Informatique 2
+
+
+VLAN : 19
+=========
+Nom : Classe_Multimedia
+Réseau : 192.168.19.0/24
+Classe Multimedia 1 
+Classe Multimedia 2
+Classe Multimedia 3
+
+VLAN : 29
+=========
+Nom : Département_Informatique
+Réseau : 192.168.29.0/24
+8 Ports
+
+VLAN : 39
+=========
+Nom : Départment_Multimedia
+Réseau : 192.168.39.0/24
+
+
+VLAN : 49
+=========
+Nom : Classe_Enseignement
+Réseau : 192.168.49.0/24
+Classe 1 à 10
+
+VLAN : 59
+=========
+Nom : Bureau_Administration
+Réseau : 192.168.59.0/24
+
+
+-------
+ÉTAGE 2
+-------
+
+VLAN : 9
+=========
+Nom : Classe_Informatique
+Réseau : 192.168.10.0/24
+Classe Informatique 3
+
+VLAN : 19
+=========
+Nom : Classe_Multimedia
+Réseau : 192.168.20.0/24
+Classe Multimedia 4
+Classe Multimedia 5
+
+VLAN : 49
+=========
+Nom : Classe_Enseignement
+Réseau : 192.168.50.0/24
+Classe 11 à 20
+
+VLAN : 69
+=========
+Nom : Departement_Français
+Réseau : 192.168.69.0/24
+
+VLAN : 79
+=========
+Nom : Departement_Philosophie
+Réseau : 192.168.79.0/24
+
+VLAN : 89
+=========
+Nom : Finance
+Réseau : 192.168.89.0/24
+
+VLAN 99
+=======
+Nom : TI
+Réseau : 192.168.99.0/24
+
+VLAN 109
+========
+Nom : Aide_Pedagogiques
+Réseau : 192.168.109.0/24
+
+
+-------
+ÉTAPE 3
+-------
+
+VLAN 119
+========
+Nom : Server_Publics
+Réseau : 192.168.119.0/24
+
+VLAN 129
+========
+Nom : Server_Prives
+Réseau : 192.168.129.0/24

@@ -1,0 +1,17 @@
+=================
+Création des vlan
+=================
+
+===============================================
+Configuration des vlans sur la switch principal
+===============================================
+
+vtp mode server
+vtp domain  pogo
+vtp password pogo1
+vlan 9
+name Classe_Informatique
+interface GigabitEthernet 0/1
+switchport trunk encapsulation dot1q
+switchport mode trunk
+ 
