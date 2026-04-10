@@ -1,17 +1,142 @@
-=================
-Création des vlan
-=================
-
 ===============================================
 Configuration des vlans sur la switch principal
 ===============================================
 
-vtp mode server
-vtp domain  pogo
-vtp password pogo1
-vlan 9
-name Classe_Informatique
-interface GigabitEthernet 0/1
+!Mettre les ports connectés des switch L2 en mode trunk sur les ports de la switch principal 
+interface range FastEthernet 0/1 - 7
 switchport trunk encapsulation dot1q
 switchport mode trunk
- 
+
+!Configurer le vtp pour la switch L3
+vtp mode server
+vtp domain pogoville
+vtp password admin123
+
+!Configurer le vtp pour les switch L2
+vtp mode client
+vtp domain pogoville
+vtp password admin123
+================================
+--------------------------------
+================================
+!Créer les vlan sur la switch L3
+vlan 9
+name Classe_Informatique
+exit
+vlan 19
+name Classe_Multimedia
+exit
+vlan 29
+name Departement_Informatique
+exit
+vlan 39
+name Departement_Multimedia
+exit
+vlan 49
+name Classe_Enseignement
+exit
+vlan 59
+name Bureau_Administration
+exit
+vlan 69
+name Departement_Francais
+exit
+vlan 79
+name Departement_Philosophie
+exit
+vlan 89
+name Finance
+exit
+vlan 99
+name TI
+exit
+vlan 109
+name Aide_Pedagogiques
+exit
+vlan 119
+name Server_Publics
+exit
+vlan 129
+name Server_Prives
+
+=====================================
+--------------ÉTAGE1-----------------
+=====================================
+!SWITCH0
+interface range fastEthernet 0/1 - 24
+switchport mode access
+switchport access vlan 9
+-------------------------------------
+!SWITCH1
+interface range FastEthernet 0/1 - 24
+switchport mode access
+switchport access vlan 9
+-------------------------------------
+!SWITCH2
+interface range fastEthernet 0/1 - 6
+switchport mode access
+switchport access vlan 9
+exit
+interface range FastEthernet 0/7 - 24
+switchport mode access
+switchport access vlan 19
+-------------------------------------
+!SWITCH3
+interface range fastEthernet 0/1 - 24
+switchport mode access
+switchport access vlan 19
+-------------------------------------
+!SWITCH4
+interface range fastEthernet 0/1 - 6
+switchport mode access
+switchport access vlan 19
+exit
+interface range fastEthernet 0/7 - 14
+switchport mode access
+switchport access vlan 29
+exit
+interface range fastEthernet 0/15 - 22
+switchport mode access
+switchport access vlan 39
+exit
+interface range fastEthernet 0/23 - 24
+shutdown
+--------------------------------------
+!SWITCH5
+interface range fastEthernet 0/1 - 10
+switchport mode access
+switchport access vlan 49
+exit
+interface range fastEthernet 0/11 - 24
+switchport mode access
+switchport access vlan 59
+
+======================================
+-------Configurer les routes----------
+======================================
+!Sur la switch L3
+ip routing
+interface vlan 9
+ip address 192.168.9.1 255.255.255.0
+no shutdown
+exit
+interface vlan 19
+ip address 192.168.19.1 255.255.255.0
+no shutdown
+exit
+interface vlan 29
+ip address 192.168.29.1 255.255.255.0
+no shutdown
+exit
+interface vlan 39
+ip address 192.168.39.1 255.255.255.0
+no shutdown
+exit
+interface vlan 49
+ip address 192.168.49.1 255.255.255.0
+no shutdown
+exit
+interface vlan 59
+ip address 192.168.59.1 255.255.255.0
+no shutdown
+exit
