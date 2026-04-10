@@ -66,11 +66,13 @@ name Server_Prives
 interface range fastEthernet 0/1 - 24
 switchport mode access
 switchport access vlan 9
+exit
 -------------------------------------
 !SWITCH1
 interface range FastEthernet 0/1 - 24
 switchport mode access
 switchport access vlan 9
+exit
 -------------------------------------
 !SWITCH2
 interface range fastEthernet 0/1 - 6
@@ -80,6 +82,7 @@ exit
 interface range FastEthernet 0/7 - 24
 switchport mode access
 switchport access vlan 19
+exit
 -------------------------------------
 !SWITCH3
 interface range fastEthernet 0/1 - 24
@@ -101,6 +104,7 @@ switchport access vlan 39
 exit
 interface range fastEthernet 0/23 - 24
 shutdown
+exit
 --------------------------------------
 !SWITCH5
 interface range fastEthernet 0/1 - 10
@@ -110,6 +114,7 @@ exit
 interface range fastEthernet 0/11 - 24
 switchport mode access
 switchport access vlan 59
+exit
 
 ======================================
 -------Configurer les routes----------
@@ -139,4 +144,68 @@ exit
 interface vlan 59
 ip address 192.168.59.1 255.255.255.0
 no shutdown
+exit
+interface GigabitEthernet 0/1
+no switchport
+ip address 192.168.255.5 255.255.255.252
+no shutdown
+exit
+
+!Sur le Router0
+interface GigabitEthernet 0/0/0
+ip address 192.168.255.6 255.255.255.252
+no shutdown
+exit
+
+==================================================
+----------------Configurer DHCP-------------------
+==================================================
+!Sur la switch L3
+ip dhcp excluded-address 192.168.9.1 192.168.9.8
+ip dhcp excluded-address 192.168.9.110 192.168.9.254
+ip dhcp excluded-address 192.168.19.1 192.168.19.8
+ip dhcp excluded-address 192.168.19.110 192.168.19.254
+ip dhcp excluded-address 192.168.29.1 192.168.29.8
+ip dhcp excluded-address 192.168.29.110 192.168.29.254
+ip dhcp excluded-address 192.168.39.1 192.168.39.8
+ip dhcp excluded-address 192.168.39.110 192.168.39.254
+ip dhcp excluded-address 192.168.49.1 192.168.49.8
+ip dhcp excluded-address 192.168.49.110 192.168.49.254
+ip dhcp excluded-address 192.168.59.1 192.168.59.8
+ip dhcp excluded-address 192.168.59.110 192.168.59.254
+
+ip dhcp pool vlan9
+network 192.168.9.0 255.255.255.0
+default-router 192.168.9.1
+dns-server 192.168.119.1
+exit
+
+ip dhcp pool vlan19
+network 192.168.19.0 255.255.255.0
+default-router 192.168.19.1
+dns-server 192.168.119.1
+exit
+
+ip dhcp pool vlan29
+network 192.168.29.0 255.255.255.0
+default-router 192.168.29.1
+dns-server 192.168.119.1
+exit
+
+ip dhcp pool vlan39
+network 192.168.39.0 255.255.255.0
+default-router 192.168.39.1
+dns-server 192.168.119.1
+exit
+
+ip dhcp pool vlan49
+network 192.168.49.0 255.255.255.0
+default-router 192.168.49.1
+dns-server 192.168.119.1
+exit
+
+ip dhcp pool vlan59
+network 192.168.59.0 255.255.255.0
+default-router 192.168.59.1
+dns-server 192.168.119.1
 exit
