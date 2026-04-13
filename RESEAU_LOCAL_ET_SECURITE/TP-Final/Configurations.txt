@@ -1,13 +1,35 @@
 ===============================================
-Configuration des vlans sur la switch principal
+---------------CONFIGURATION-------------------
 ===============================================
 
+================================================
+-------------------ÉTAGE1-----------------------
+================================================
+1x ISR4331         → Router0
+1x 3560-24PS       → Multilayer Switch0
+6x 2960-24TT       → Switch0 à Switch5
+1x WLC             → WLC0
+2x Access Points   → APPublique1, APPublique2
+2x Access Points   → APPInfo2, APPMulti3
+1x Imprimante      → Printer0
+PCInfo1, PCInfo2
+PCMulti1, PCMulti2, PCMulti3
+PCDépartementInfo
+PCPCDépartementMulti
+PCClasseEns
+PCBureauAdmin
+Laptop1  → APPublique1
+Laptop2  → APPublique2  (public)
+Laptop3  → APPInfo2     (privé)
+Laptop4  → APPMulti3    (privé)
+
+-------------------------------------------------
 !Mettre les ports connectés des switch L2 en mode trunk sur les ports de la switch principal 
-interface range FastEthernet 0/1 - 7
+interface range FastEthernet 0/1 - 6
 switchport trunk encapsulation dot1q
 switchport mode trunk
 
-!Configurer le vtp pour la switch L3
+!Configurer le vtp pour les switch L3
 vtp mode server
 vtp domain pogoville
 vtp password admin123
@@ -17,7 +39,7 @@ vtp mode client
 vtp domain pogoville
 vtp password admin123
 ================================
---------------------------------
+--------Créer les VLAN----------
 ================================
 !Créer les vlan sur la switch L3
 vlan 9
@@ -58,10 +80,11 @@ name Server_Publics
 exit
 vlan 129
 name Server_Prives
+exit
 
-=====================================
---------------ÉTAGE1-----------------
-=====================================
+======================================
+-----------Les Switch L2--------------
+======================================
 !SWITCH0
 interface range fastEthernet 0/1 - 24
 switchport mode access
@@ -88,6 +111,7 @@ exit
 interface range fastEthernet 0/1 - 24
 switchport mode access
 switchport access vlan 19
+exit
 -------------------------------------
 !SWITCH4
 interface range fastEthernet 0/1 - 6
@@ -209,3 +233,746 @@ network 192.168.59.0 255.255.255.0
 default-router 192.168.59.1
 dns-server 192.168.119.1
 exit
+
+===============================================
+--------------Configurer SSID------------------
+===============================================
+!APPublique 1
+SSID        : WiFi-Pogoville-Public
+Security    : WPA2-PSK
+Password    : skj@4#645*
+
+!APPublique 2
+SSID        : WiFi-Pogoville-Public
+Security    : WPA2-PSK
+Password    : skj@4#645*
+
+!APPrivésInfo2
+SSID        : WiFi-Info2-Prive
+Security    : WPA2-PSK
+Password    : v/-*34@23_T78d+wew.
+
+!APPrivésMulti3
+SSID        : WiFi-Multi3-Prive
+Security    : WPA2-PSK
+Password    : 2w*/|#34_=444Re.,=^
+-----------------------------------------------
+Laptop1 => WiFi-Pogoville-Public
+Laptop4 => WiFi-Pogoville-Public
+Laptop3 => WiFi-Info2-Prive
+Laptop2 => WiFi-Multi3-Prive
+
+=================================================
+--------------------ÉTAGE2-----------------------
+=================================================
+1x ISR4331        → Router1
+1x 3560-24PS      → Multilayer Switch1
+6x 2960-24TT      → Switch6 à Switch11
+1x WLC            → WLC1
+2x Access Points  → APPublique3, APPublique4
+1x Access Point   → APPMulti5
+1x Imprimante     → Printer1
+9x PCs            → PCInfo3, PCMulti4, PCMulti5, 
+PCClasseEns2, PCFrancais, 
+PCPhilosophie, PCFinances, 
+PCTI, PCAPedagogiques
+Laptop5 (APPublique3)
+Laptop6 (APPublique4
+Laptop7 (APPMulti5)
+
+---------------------------------------------------------------
+Classe Informatique 3  → 33 PC  → VLAN 9  (réseau 192.168.10.0)
+Classe Multimédia 4    → 17 PC  → VLAN 19 (réseau 192.168.20.0)
+Classe Multimédia 5    → 13 PC  → VLAN 19 (réseau 192.168.20.0)
+Classes Enseignement   → 10 PC  → VLAN 49 (réseau 192.168.50.0)
+Dept Français          → 20 PC  → VLAN 69 (réseau 192.168.69.0)
+Dept Philosophie       → 10 PC  → VLAN 79 (réseau 192.168.79.0)
+Bureau Finances        → 5 PC   → VLAN 89 (réseau 192.168.89.0)
+Bureau TI              → 10 PC  → VLAN 99 (réseau 192.168.99.0)
+Bureau API             → 8 PC   → VLAN 109(réseau 192.168.109.0)
+
+==========================
+------Créer les VLAN------
+==========================
+!Créer les vlan sur la switch L3
+vlan 9
+name Classe_Informatique
+exit
+vlan 19
+name Classe_Multimedia
+exit
+vlan 29
+name Departement_Informatique
+exit
+vlan 39
+name Departement_Multimedia
+exit
+vlan 49
+name Classe_Enseignement
+exit
+vlan 59
+name Bureau_Administration
+exit
+vlan 69
+name Departement_Francais
+exit
+vlan 79
+name Departement_Philosophie
+exit
+vlan 89
+name Finance
+exit
+vlan 99
+name TI
+exit
+vlan 109
+name Aide_Pedagogiques
+exit
+vlan 119
+name Server_Publics
+exit
+vlan 129
+name Server_Prives
+exit
+
+========================================
+-------Configurer les routes------------
+========================================
+!Sur la switch L3
+ip routing
+interface vlan 9
+ip address 192.168.10.1 255.255.255.0
+no shutdown
+exit
+interface vlan 19
+ip address 192.168.20.1 255.255.255.0
+no shutdown
+exit
+interface vlan 49
+ip address 192.168.50.1 255.255.255.0
+no shutdown
+exit
+interface vlan 69
+ip address 192.168.69.1 255.255.255.0
+no shutdown
+exit
+interface vlan 79
+ip address 192.168.79.1 255.255.255.0
+no shutdown
+exit
+interface vlan 89
+ip address 192.168.89.1 255.255.255.0
+no shutdown
+exit
+interface vlan 99
+ip address 192.168.99.1 255.255.255.0
+no shutdown
+exit
+interface vlan 109
+ip address 192.168.109.1 255.255.255.0
+no shutdown
+exit
+interface GigabitEthernet 0/1
+no switchport
+ip address 192.168.255.9 255.255.255.252
+no shutdown
+exit
+-----------------------------------------
+!Router1
+interface GigabitEthernet 0/0/0
+ip address 192.168.255.10 255.255.255.252
+no shutdown
+exit
+
+=========================================
+---------Croquis des ports---------------
+=========================================
+Switch6  
+→ 24 ports → VLAN 9  (Classe Info 3 : ports 1-24)
+Switch7  
+→ 24 ports → VLAN 9  (Classe Info 3 suite : ports 1-9)
+→ VLAN 19 (Classe Multimédia 4 : ports 10-24) 
+Switch8  
+→ 24 ports → VLAN 19 (Classe Multimédia 4 suite : ports 1-2)
+→ VLAN 19 (Classe Multimédia 5 : ports 3-15)
+→ VLAN 49 (Classe Enseignement : ports 16-24)
+Switch9  
+→ 24 ports → VLAN 49 (Classe Enseignement suite : port 1)
+→ VLAN 69 (Dept Français : ports 2-21)
+→ VLAN 79 (Dept Philosophie : ports 22-24)
+Switch10 
+→ 24 ports → VLAN 79 (Dept Philosophie suite : ports 1-7)
+→ VLAN 89 (Finances : ports 8-12)
+→ VLAN 99 (TI : ports 13-22)
+→ shutdown (ports 23-24)
+Switch11 
+→ 24 ports → VLAN 109 (API : ports 1-8)
+→ ports libres pour imprimante, WLC, APs
+
+============================================================
+--------Configuration des ports sur les switch l2-----------
+============================================================
+!Switch6
+interface range fastEthernet 0/1 - 24
+switchport mode access
+switchport access vlan 9
+exit
+------------------------------------------------------------
+!Switch7
+interface range fastEthernet 0/1 - 9
+switchport mode access
+switchport access vlan 9
+exit
+interface range fastEthernet 0/10 - 24
+switchport mode access
+switchport access vlan 19
+exit
+--------------------------------------------------------------
+!Switch8
+interface range fastEthernet 0/1 - 2
+switchport mode access
+switchport access vlan 19
+exit
+interface range fastEthernet 0/3 - 15
+switchport mode access
+switchport access vlan 19
+exit
+interface range fastEthernet 0/16 - 24
+switchport mode access
+switchport access vlan 49
+exit
+---------------------------------------------------------------
+!Switch9
+interface fastEthernet 0/1
+switchport mode access
+switchport access vlan 49
+exit
+interface range fastEthernet 0/2 - 21
+switchport mode access
+switchport access vlan 69
+exit
+interface range fastEthernet 0/22 - 24
+switchport mode access
+switchport access vlan 79
+exit
+---------------------------------------------------------------
+!Switch10
+interface range fastEthernet 0/1 - 7
+switchport mode access
+switchport access vlan 79
+exit
+interface range fastEthernet 0/8 - 12
+switchport mode access
+switchport access vlan 89
+exit
+interface range fastEthernet 0/13 - 22
+switchport mode access
+switchport access vlan 99
+exit
+interface range fastEthernet 0/23 - 24
+shutdown
+exit
+---------------------------------------------------------------
+!Switch11
+interface range fastEthernet 0/1 - 8
+switchport mode access
+switchport access vlan 109
+exit
+interface range fastEthernet 0/9 - 24
+shutdown
+exit
+
+======================================================
+-----------------Configurer DHCP----------------------
+======================================================
+!Sur la switch L3
+ip dhcp excluded-address 192.168.10.1 192.168.10.8
+ip dhcp excluded-address 192.168.10.110 192.168.10.254
+ip dhcp excluded-address 192.168.20.1 192.168.20.8
+ip dhcp excluded-address 192.168.20.110 192.168.20.254
+ip dhcp excluded-address 192.168.50.1 192.168.50.8
+ip dhcp excluded-address 192.168.50.110 192.168.50.254
+ip dhcp excluded-address 192.168.69.1 192.168.69.8
+ip dhcp excluded-address 192.168.69.110 192.168.69.254
+ip dhcp excluded-address 192.168.79.1 192.168.79.8
+ip dhcp excluded-address 192.168.79.110 192.168.79.254
+ip dhcp excluded-address 192.168.89.1 192.168.89.8
+ip dhcp excluded-address 192.168.89.110 192.168.89.254
+ip dhcp excluded-address 192.168.99.1 192.168.99.8
+ip dhcp excluded-address 192.168.99.110 192.168.99.254
+ip dhcp excluded-address 192.168.109.1 192.168.109.8
+ip dhcp excluded-address 192.168.109.110 192.168.109.254
+
+ip dhcp pool vlan9
+network 192.168.10.0 255.255.255.0
+default-router 192.168.10.1
+dns-server 192.168.119.1
+exit
+
+ip dhcp pool vlan19
+network 192.168.20.0 255.255.255.0
+default-router 192.168.20.1
+dns-server 192.168.119.1
+exit
+
+ip dhcp pool vlan49
+network 192.168.50.0 255.255.255.0
+default-router 192.168.50.1
+dns-server 192.168.119.1
+exit
+
+ip dhcp pool vlan69
+network 192.168.69.0 255.255.255.0
+default-router 192.168.69.1
+dns-server 192.168.119.1
+exit
+
+ip dhcp pool vlan79
+network 192.168.79.0 255.255.255.0
+default-router 192.168.79.1
+dns-server 192.168.119.1
+exit
+
+ip dhcp pool vlan89
+network 192.168.89.0 255.255.255.0
+default-router 192.168.89.1
+dns-server 192.168.119.1
+exit
+
+ip dhcp pool vlan99
+network 192.168.99.0 255.255.255.0
+default-router 192.168.99.1
+dns-server 192.168.119.1
+exit
+
+ip dhcp pool vlan109
+network 192.168.109.0 255.255.255.0
+default-router 192.168.109.1
+dns-server 192.168.119.1
+exit
+
+======================================
+---------Configurer SSID--------------
+======================================
+APPublique3 :
+SSID     : WiFi-Pogoville-Public
+Security : WPA2-PSK
+Password : skj@4#645*
+
+APPublique4 :
+SSID     : WiFi-Pogoville-Public
+Security : WPA2-PSK
+Password : skj@4#645*
+
+APPMulti5 :
+SSID     : WiFi-Multi5-Prive
+Security : WPA2-PSK
+Password : F/-*84@57_W09yu+nqp.
+
+======================================
+--------------ÉTAGE3------------------
+======================================
+!Switch12
+vlan 119
+name Server_Publics
+exit
+
+vlan 129
+name Server_Prives
+exit
+
+interface range FastEthernet 0/1 - 4
+switchport mode access
+switchport access vlan 119
+exit
+
+interface range FastEthernet 0/5 - 9
+switchport mode access
+switchport access vlan 129
+exit
+
+interface range FastEthernet 0/10 - 24
+shutdown
+exit
+
+========================================================
+---------------------Server Public----------------------
+========================================================
+ServeurDNS  → 192.168.119.2  /24  GW: 192.168.119.1
+ServeurWeb1 → 192.168.119.3  /24  GW: 192.168.119.1
+ServeurWeb2 → 192.168.119.4  /24  GW: 192.168.119.1
+ServeurFTP1 → 192.168.119.5  /24  GW: 192.168.119.1
+
+========================================================
+---------------------Server Privés----------------------
+========================================================
+ServeurOctopus    → 192.168.129.2  /24  GW: 192.168.129.1
+ServeurEmployes   → 192.168.129.3  /24  GW: 192.168.129.1
+ServeurFTP2       → 192.168.129.4  /24  GW: 192.168.129.1
+ServeurSSH        → 192.168.129.5  /24  GW: 192.168.129.1
+ServeurMultimedia → 192.168.129.6  /24  GW: 192.168.129.1
+
+!Router2
+interface GigabitEthernet 0/0/0
+no shutdown
+exit
+
+interface GigabitEthernet 0/0/0.119
+encapsulation dot1q 119
+ip address 192.168.119.1 255.255.255.0
+exit
+
+interface GigabitEthernet 0/0/0.129
+encapsulation dot1q 129
+ip address 192.168.129.1 255.255.255.0
+exit
+
+======================================
+--------------ROUTES------------------
+======================================
+!Router0
+interface GigabitEthernet 0/0/1
+ip address 192.168.255.57 255.255.255.252
+no shutdown
+exit
+
+!Router1
+interface GigabitEthernet 0/0/1
+ip address 192.168.255.58 255.255.255.252
+no shutdown
+exit
+
+interface GigabitEthernet 0/0/2
+ip address 192.168.255.85 255.255.255.252
+no shutdown
+exit
+
+!Router2
+interface GigabitEthernet 0/0/1
+ip address 192.168.255.86 255.255.255.252
+no shutdown
+exit
+
+=======================================
+----------------OSPF-------------------
+=======================================
+!Router0
+router ospf 1
+router-id 1.1.1.1
+network 192.168.255.56 0.0.0.3 area 0
+network 192.168.255.4 0.0.0.3 area 0
+network 192.168.9.0 0.0.0.255 area 0
+network 192.168.19.0 0.0.0.255 area 0
+network 192.168.29.0 0.0.0.255 area 0
+network 192.168.39.0 0.0.0.255 area 0
+network 192.168.49.0 0.0.0.255 area 0
+network 192.168.59.0 0.0.0.255 area 0
+exit
+
+!Router1
+router ospf 1
+router-id 2.2.2.2
+network 192.168.255.56 0.0.0.3 area 0
+network 192.168.255.84 0.0.0.3 area 0
+network 192.168.255.8 0.0.0.3 area 0
+network 192.168.10.0 0.0.0.255 area 0
+network 192.168.20.0 0.0.0.255 area 0
+network 192.168.50.0 0.0.0.255 area 0
+network 192.168.69.0 0.0.0.255 area 0
+network 192.168.79.0 0.0.0.255 area 0
+network 192.168.89.0 0.0.0.255 area 0
+network 192.168.99.0 0.0.0.255 area 0
+network 192.168.109.0 0.0.0.255 area 0
+exit
+
+!Router2
+router ospf 1
+router-id 3.3.3.3
+network 192.168.255.84 0.0.0.3 area 0
+network 192.168.119.0 0.0.0.255 area 0
+network 192.168.129.0 0.0.0.255 area 0
+exit
+
+!Sur la MultiLayerSwitch0
+router ospf 1
+router-id 4.4.4.4
+network 192.168.255.4 0.0.0.3 area 0
+network 192.168.9.0 0.0.0.255 area 0
+network 192.168.19.0 0.0.0.255 area 0
+network 192.168.29.0 0.0.0.255 area 0
+network 192.168.39.0 0.0.0.255 area 0
+network 192.168.49.0 0.0.0.255 area 0
+network 192.168.59.0 0.0.0.255 area 0
+exit
+
+!Sur la MultiLayerSwitch1
+router ospf 1
+router-id 5.5.5.5
+network 192.168.255.8 0.0.0.3 area 0
+network 192.168.10.0 0.0.0.255 area 0
+network 192.168.20.0 0.0.0.255 area 0
+network 192.168.50.0 0.0.0.255 area 0
+network 192.168.69.0 0.0.0.255 area 0
+network 192.168.79.0 0.0.0.255 area 0
+network 192.168.89.0 0.0.0.255 area 0
+network 192.168.99.0 0.0.0.255 area 0
+network 192.168.109.0 0.0.0.255 area 0
+exit
+
+======================================
+--------------INTERNET----------------
+======================================
+1x Routeur  → RouterISP
+3x PCs      → PCEmployeMaison1, PCEmployeMaison2, PCHackerEvil
+1x Serveur  → ServeurGouvernement
+2x Serveurs → ServeurDouteux1, ServeurDouteux2
+
+--------------------------------------
+!Sur la SwitchIsp
+vlan 10
+name Reseau_Employes
+exit
+vlan 20
+name Reseau_Douteux
+exit
+
+interface range FastEthernet 0/1 - 4
+switchport mode access
+switchport access vlan 10
+exit
+
+interface range FastEthernet 0/5 - 6
+switchport mode access
+switchport access vlan 20
+exit
+
+interface range FastEthernet 0/7 - 24
+shutdown
+exit
+
+interface GigabitEthernet 0/1
+switchport mode trunk
+exit
+
+!Router2
+interface GigabitEthernet 0/0/2
+ip address 77.9.23.117 255.255.255.192
+no shutdown
+exit
+
+!RouterISP
+interface GigabitEthernet 0/0/0
+ip address 77.9.23.65 255.255.255.192
+no shutdown
+exit
+
+interface GigabitEthernet 0/0/1
+no shutdown
+no ip address
+exit
+
+interface GigabitEthernet 0/0/1.10
+encapsulation dot1q 10
+ip address 84.9.0.1 255.240.0.0
+exit
+
+interface GigabitEthernet 0/0/1.20
+encapsulation dot1q 20
+ip address 111.9.0.1 255.255.240.0
+exit
+-----------------------------------------------------------
+PCEmployeMaison1    → 84.9.0.2   /255.240.0.0  GW: 84.9.0.1
+PCEmployeMaison2    → 84.9.0.3   /255.240.0.0  GW: 84.9.0.1
+PCHackerEvil        → 84.9.0.4   /255.240.0.0  GW: 84.9.0.1
+ServeurGouvernement → 84.9.0.5   /255.240.0.0  GW: 84.9.0.1
+-----------------------------------------------------------
+ServeurDouteux1 → 111.9.0.2  /255.255.240.0  GW: 111.9.0.1
+ServeurDouteux2 → 111.9.0.3  /255.255.240.0  GW: 111.9.0.1
+
+---------------------------------------
+!Router0
+ip route 0.0.0.0 0.0.0.0 192.168.255.58
+exit
+---------------------------------------
+!Router1
+ip route 0.0.0.0 0.0.0.0 192.168.255.86
+exit
+-----------------------------------
+!Router2
+ip route 0.0.0.0 0.0.0.0 77.9.23.65
+exit
+router ospf 1
+default-information originate
+exit
+-----------------------------------
+!RouterISP
+ip route 0.0.0.0 0.0.0.0 77.9.23.117
+exit
+--------------------------------------
+!MultiLayerSwitch0
+ip route 0.0.0.0 0.0.0.0 192.168.255.6
+exit
+--------------------------------------
+!MultiLayerSwitch1
+ip route 0.0.0.0 0.0.0.0 192.168.255.10
+exit
+
+=======================================
+----------------SSH--------------------
+=======================================
+!Sur les routeurs
+!router0
+hostname Router0
+username tech password admin123456
+ip domain-name pogoville.ca
+crypto key generate rsa general-keys
+ip ssh version 2
+line vty 0 4
+transport input ssh
+login local
+exit
+------------------------------------
+!router1
+hostname Router1
+username tech password admin123456
+ip domain-name pogoville.ca
+crypto key generate rsa general-keys
+ip ssh version 2
+line vty 0 4
+transport input ssh
+login local
+exit
+-------------------------------------
+!router2
+hostname Router2
+username tech password admin123456
+ip domain-name pogoville.ca
+crypto key generate rsa general-keys
+ip ssh version 2
+line vty 0 4
+transport input ssh
+login local
+exit
+-------------------------------------
+!Switch12
+hostname Switch12
+interface vlan 119
+ip address 192.168.119.10 255.255.255.0
+no shutdown
+exit
+ip default-gateway 192.168.119.1
+username tech password admin123456
+ip domain-name pogoville.ca
+crypto key generate rsa general-keys
+ip ssh version 2
+line vty 0 4
+transport input ssh
+login local
+exit
+interface GigabitEthernet 0/1
+switchport mode trunk
+exit
+
+========================================
+------------------DNS-------------------
+========================================
+A- record
+cegep.pogoville.ca       → 192.168.119.3
+omnivox.pogoville.ca     → 192.168.119.4
+ftp.pogoville.ca         → 192.168.119.5
+dns.pogoville.ca         → 192.168.119.2
+octopus.pogoville.ca     → 192.168.129.2
+employes.pogoville.ca    → 192.168.129.3
+info.ftp.pogoville.ca    → 192.168.129.4
+info.ssh.pogoville.ca    → 192.168.129.5
+multimedia.pogoville.ca  → 192.168.129.6
+gov.education.ca         → 84.9.0.5
+freedownload.ru          → 111.9.0.2
+winmoney.ru              → 111.9.0.3
+----------------------------------------
+CNAME
+pogoville.ca    → cegep.pogoville.ca
+omnivox.ca      → omnivox.pogoville.ca
+octopus         → octopus.pogoville.ca
+----------------------------------------
+
+========================================
+-------------- HOSTNAME-----------------
+========================================
+!Router0
+enable
+configure terminal
+hostname Router-Etage1
+----------------------------------------
+!Router1
+enable
+configure terminal
+hostname Router-Etage2
+----------------------------------------
+!Router2
+enable
+configure terminal
+hostname Router-Etage3
+----------------------------------------
+!RouterISP
+enable
+configure terminal
+hostname RouterISP
+----------------------------------------
+!Multilayer Switch0
+enable
+configure terminal
+hostname MLSwitch-Etage1
+----------------------------------------
+!Multilayer Switch1
+enable
+configure terminal
+hostname MLSwitch-Etage2
+----------------------------------------
+!Switch12
+enable
+configure terminal
+hostname Switch-Etage3
+----------------------------------------
+
+=======================================
+------------------WLC------------------
+=======================================
+Username : admin
+Password : Admin123456!
+Confirm  : Admin123456!
+---------------------------------------
+System Name        : WLC-Etage1
+Country            : Canada
+Date & Time        : laisser tel quel
+Timezone           : Eastern Time
+NTP Server         : laisser vide
+Management IP      : 192.168.19.200
+Subnet Mask        : 255.255.255.0
+Default Gateway    : 192.168.19.1
+---------------------------------------
+Network Name  : WiFi-Pogoville-Public
+Security      : WPA2 Personal
+Passphrase    : skj@4#645*
+Confirm       : skj@4#645*
+VLAN          : Management VLAN
+DHCP Server   : laisser vide
+----------------------------------------
+!Configurer la switchWLC1
+----------------------------------------
+!Pour le server
+IP Address  : 192.168.19.2
+Subnet Mask : 255.255.255.0
+Gateway     : 192.168.19.1
+DNS         : 192.168.119.2
+-------------------------------
+Services → DHCP → ON
+Pool Name    : WLC-Pool
+Default GW   : 192.168.19.1
+DNS Server   : 192.168.119.2
+Start IP     : 192.168.19.20
+Subnet Mask  : 255.255.255.0
+Max Users    : 230
+
+
+
