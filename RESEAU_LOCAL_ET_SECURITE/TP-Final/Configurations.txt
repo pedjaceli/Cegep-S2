@@ -947,9 +947,10 @@ Country            : Canada
 Date & Time        : laisser tel quel
 Timezone           : Eastern Time
 NTP Server         : laisser vide
-Management IP      : 192.168.19.200
+Management IP      : 192.168.139.200
 Subnet Mask        : 255.255.255.0
-Default Gateway    : 192.168.19.1
+Default Gateway    : 192.168.139.1
+Management VLAN ID : 139
 ---------------------------------------
 Network Name  : WiFi-Pogoville-Public
 Security      : WPA2 Personal
@@ -974,5 +975,94 @@ Start IP     : 192.168.19.20
 Subnet Mask  : 255.255.255.0
 Max Users    : 230
 
+=========================================
+--------------VLAN Publics---------------
+=========================================
+vlan 139
+name WiFi_Public
+exit
 
+interface vlan 139
+ip address 192.168.139.1 255.255.255.0
+no shutdown
+exit
 
+ip dhcp excluded-address 192.168.139.1 192.168.139.8
+ip dhcp excluded-address 192.168.139.110 192.168.139.254
+
+ip dhcp pool vlan139
+network 192.168.139.0 255.255.255.0
+default-router 192.168.139.1
+dns-server 192.168.119.2
+exit
+
+router ospf 1
+network 192.168.139.0 0.0.0.255 area 0
+exit
+
+interface FastEthernet 0/7
+switchport mode access
+switchport access vlan 139
+exit
+
+interface FastEthernet 0/8
+switchport mode access
+switchport access vlan 139
+exit
+
+interface FastEthernet 0/9
+switchport mode access
+switchport access vlan 139
+exit
+------------------------------
+!Server de distribution
+IP Address  : 192.168.139.3
+Subnet Mask : 255.255.255.0
+Gateway     : 192.168.139.1
+DNS         : 192.168.119.2
+
+Services → DHCP → ON
+Pool Name    : WLC-Pool
+Default GW   : 192.168.139.1
+DNS Server   : 192.168.119.2
+Start IP     : 192.168.139.9
+Subnet Mask  : 255.255.255.0
+Max Users    : 100
+WLC Address  : 192.168.139.200
+-------------------------------------
+vlan 139
+name WiFi_Public
+exit
+
+interface vlan 139
+ip address 192.168.140.1 255.255.255.0
+no shutdown
+exit
+
+ip dhcp excluded-address 192.168.140.1 192.168.140.8
+ip dhcp excluded-address 192.168.140.110 192.168.140.254
+
+ip dhcp pool vlan139etage2
+network 192.168.140.0 255.255.255.0
+default-router 192.168.140.1
+dns-server 192.168.119.2
+exit
+
+router ospf 1
+network 192.168.140.0 0.0.0.255 area 0
+exit
+---------------------------------------------
+!Server de distribution
+IP Address  : 192.168.139.3
+Subnet Mask : 255.255.255.0
+Gateway     : 192.168.140.1
+DNS         : 192.168.119.2
+
+Services → DHCP → ON
+Pool Name    : WLC-Pool
+Default GW   : 192.168.140.1
+DNS Server   : 192.168.119.2
+Start IP     : 192.168.140.9
+Subnet Mask  : 255.255.255.0
+Max Users    : 100
+WLC Address  : 192.168.140.200
