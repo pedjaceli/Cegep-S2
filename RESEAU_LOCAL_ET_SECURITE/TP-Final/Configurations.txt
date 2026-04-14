@@ -1000,17 +1000,7 @@ router ospf 1
 network 192.168.139.0 0.0.0.255 area 0
 exit
 
-interface FastEthernet 0/7
-switchport mode access
-switchport access vlan 139
-exit
-
-interface FastEthernet 0/8
-switchport mode access
-switchport access vlan 139
-exit
-
-interface FastEthernet 0/9
+interface range FastEthernet 0/7 - 10
 switchport mode access
 switchport access vlan 139
 exit
