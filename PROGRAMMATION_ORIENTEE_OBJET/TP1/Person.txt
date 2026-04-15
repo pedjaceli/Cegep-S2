@@ -1,0 +1,100 @@
+namespace TP1
+{
+    class Person
+    {
+        /// <summary>
+        /// Constructeur - demande le prénom et le nom à l'utilisateur
+        /// </summary>
+        protected Person()
+        {
+            _id = ++_lastId;
+            _firstName = AskName("Indiquez le prénom: ");
+            _lastName = AskName("Indiquez le nom: ");
+            _schedule = new Schedule();
+        }
+
+
+        /// <summary>
+        /// Constructeur - recrée une personne à partir d'une ligne du fichier de sauvegarde
+        /// </summary>
+        protected Person(int id, string firstName, string lastName)
+        {
+            _id = id;
+            _firstName = firstName;
+            _lastName = lastName;
+            _schedule = new Schedule();
+
+            // On s'assure que le compteur ne génère pas un ID déjà utilisé
+            if (id > _lastId)
+                _lastId = id;
+        }
+
+
+        /// <summary>
+        /// Identifiant unique de la personne
+        /// </summary>
+        public int Id
+        {
+            get { return _id; }
+        }
+
+
+        /// <summary>
+        /// Prénom et nom complet de la personne
+        /// </summary>
+        public string FullName
+        {
+            get { return $"{_firstName} {_lastName}"; }
+        }
+
+
+        /// <summary>
+        /// Affiche l'identifiant, le prénom et le nom
+        /// </summary>
+        protected void PrintCommon()
+        {
+            Console.WriteLine($"{_id,5} - {_firstName} {_lastName}");
+        }
+
+
+        /// <summary>
+        /// Ligne de sauvegarde dans le fichier (id;prénom;nom)
+        /// </summary>
+        protected string FileLine
+        {
+            get { return $"{_id};{_firstName};{_lastName}"; }
+        }
+
+
+        /// <summary>
+        /// L'horaire de la personne
+        /// </summary>
+        protected Schedule PersonSchedule
+        {
+            get { return _schedule; }
+        }
+
+
+        // Demande un prénom ou un nom à l'utilisateur, redemande tant qu'il est vide
+        private static string AskName(string prompt)
+        {
+            while (true)
+            {
+                Console.Write(prompt);
+                string value = Console.ReadLine().Trim();
+                if (!string.IsNullOrWhiteSpace(value))
+                    return value;
+                Console.WriteLine("Le champ ne peut pas être vide.");
+            }
+        }
+
+
+        // Compteur statique partagé par tous les objets Person (patients et médecins)
+        private static int _lastId = 0;
+
+        private readonly int _id;
+        private readonly string _firstName;
+        private readonly string _lastName;
+        private readonly Schedule _schedule;
+    }
+}
