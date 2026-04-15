@@ -1,0 +1,384 @@
+================================================================================
+       FEUILLE DE NOTES - EXAMEN RÉSEAU LOCAL ET SÉCURITÉ
+       Sujets : VLAN/VTP, Router-on-a-stick, DHCP, OSPF, Routes statiques, ACL
+================================================================================
+
+MODES CLI (rappel rapide)
+--------------------------
+Router>                  Mode de base (lecture limitée)
+Router> enable           → Router#
+Router# configure terminal → Router(config)#
+Router(config)# interface GigabitEthernet0/0/0 → Router(config-if)#
+exit                     Retour au mode précédent
+end                      Retour direct au mode privilégié (#)
+do show running-config   Commande privilégiée depuis mode config
+write                    Sauvegarder la configuration !
+
+================================================================================
+1. VLAN
+================================================================================
+
+--- Créer un VLAN (sur Switch) ---
+vlan 10
+name Programmeurs
+exit
+
+show vlan brief          Afficher les VLANs
+
+--- Configurer un port en Access (un seul VLAN) ---
+interface GigabitEthernet 0/1
+switchport mode access
+switchport access vlan 10
+exit
+
+--- Configurer plusieurs ports en Access ---
+interface range FastEthernet 0/1 - 24
+switchport mode access
+switchport access vlan 10
+exit
+
+--- Activer / Désactiver des ports ---
+interface range FastEthernet 0/1 - 24
+shutdown        ← désactiver
+no shutdown     ← activer
+exit
+
+--- Configurer un port en Trunk (entre Switch ou Switch↔Routeur) ---
+interface GigabitEthernet 0/1
+switchport mode trunk
+exit
+
+--- Pour Switch L3 (Multilayer Switch) : port trunk avec encapsulation ---
+interface range FastEthernet 0/1 - 6
+switchport trunk encapsulation dot1q
+switchport mode trunk
+exit
+
+================================================================================
+2. VTP (VLAN Trunk Protocol) — Serveur de VLAN
+================================================================================
+
+RÔLES :
+  Serveur    → crée/modifie les VLANs, envoie la config aux clients
+  Client     → reçoit la config et écrase ses VLANs locaux
+  Transparent → reçoit et retransmet, mais garde ses VLANs locaux
+
+PRÉ-REQUIS : les ports entre les Switch doivent être en TRUNK
+
+--- Configurer le serveur VTP (sur Switch L3 principal) ---
+vtp mode server
+vtp domain nom_domaine
+vtp password motdepasse
+
+--- Configurer un client VTP (sur Switch L2) ---
+vtp mode client
+vtp domain nom_domaine
+vtp password motdepasse
+
+--- Vérifier VTP ---
+show vtp status
+
+ATTENTION : domaine et mot de passe doivent être IDENTIQUES sur serveur et clients.
+Modifier un VLAN sur le serveur force un renvoi aux clients.
+
+================================================================================
+3. ROUTER ON A STICK (Ports virtuels)
+================================================================================
+
+But : permettre à un routeur de gérer plusieurs VLANs sur UN SEUL port physique.
+
+ÉTAPES :
+  1. Sur la Switch → port connecté au routeur en TRUNK
+  2. Sur le Routeur → activer le port physique SANS adresse IP
+  3. Créer un sous-port (port virtuel) par VLAN avec encapsulation dot1Q
+  4. Configurer DHCP pool par VLAN (optionnel)
+
+--- Étape 1 : Switch - port vers routeur en Trunk ---
+interface GigabitEthernet 0/1
+switchport mode trunk
+exit
+
+--- Étape 2 : Routeur - activer port physique sans IP ---
+interface GigabitEthernet0/0/0
+no shutdown
+no ip address
+exit
+
+--- Étape 3 : Créer ports virtuels par VLAN ---
+interface GigabitEthernet0/0/0.10
+encapsulation dot1q 10
+ip address 192.168.10.1 255.255.255.0
+exit
+
+interface GigabitEthernet0/0/0.20
+encapsulation dot1q 20
+ip address 192.168.20.1 255.255.255.0
+exit
+
+interface GigabitEthernet0/0/0.30
+encapsulation dot1q 30
+ip address 192.168.30.1 255.255.255.0
+exit
+
+--- Étape 4 : DHCP pool par VLAN ---
+ip dhcp pool pool10
+  network 192.168.10.0 255.255.255.0
+  default-router 192.168.10.1
+  dns-server 192.168.100.5
+exit
+
+ip dhcp pool pool20
+  network 192.168.20.0 255.255.255.0
+  default-router 192.168.20.1
+  dns-server 192.168.100.5
+exit
+
+--- Exclure des adresses DHCP (passerelle, serveurs, réservés) ---
+ip dhcp excluded-address 192.168.10.1 192.168.10.9
+ip dhcp excluded-address 192.168.10.200 192.168.10.255
+
+ip dhcp excluded-address 192.168.20.1 192.168.20.49
+ip dhcp excluded-address 192.168.20.251 192.168.20.255
+
+================================================================================
+4. ROUTES STATIQUES PAR DÉFAUT
+================================================================================
+
+But : envoyer tout le trafic inconnu (internet) vers un routeur suivant.
+Syntaxe : ip route 0.0.0.0 0.0.0.0 [IP_saut_suivant OU port_sortie]
+
+--- Par IP du routeur suivant ---
+ip route 0.0.0.0 0.0.0.0 192.168.255.2
+
+--- Par port de sortie ---
+ip route 0.0.0.0 0.0.0.0 GigabitEthernet 0/0/1
+
+--- Route statique vers un réseau spécifique ---
+ip route 192.168.2.0 255.255.255.0 192.168.255.2
+
+--- Afficher la table de routage ---
+show ip route
+
+================================================================================
+5. ROUTES DYNAMIQUES — OSPF
+================================================================================
+
+But : échange automatique des routes entre routeurs d'une même zone.
+Réseau /30 entre routeurs : masque 255.255.255.252 (seulement 2 hôtes, pas de gaspillage)
+
+--- Activer OSPF sur un routeur ---
+router ospf 1
+  router-id 1.1.1.1          ← ID unique (1.1.1.1, 2.2.2.2, 3.3.3.3...)
+  network 192.168.255.0 0.0.0.3 area 0    ← lien /30 vers routeur voisin
+  network 192.168.10.0 0.0.0.255 area 0   ← réseau local
+  network 192.168.20.0 0.0.0.255 area 0   ← réseau local
+exit
+
+--- Wildcard mask (inverse du masque réseau) ---
+  /24 → masque 255.255.255.0   → wildcard 0.0.0.255
+  /30 → masque 255.255.255.252 → wildcard 0.0.0.3
+  /16 → masque 255.255.0.0     → wildcard 0.0.255.255
+
+--- Propager la route par défaut via OSPF (routeur avec accès internet) ---
+router ospf 1
+  default-information originate
+exit
+
+--- Sur Switch L3 avec OSPF ---
+ip routing         ← activer le routage sur la Switch L3
+router ospf 1
+  router-id 4.4.4.4
+  network 192.168.255.4 0.0.0.3 area 0
+  network 192.168.9.0 0.0.0.255 area 0
+exit
+
+--- Exemple complet multi-routeurs ---
+!Router0 (id 1.1.1.1) - connecté à Router1 par 192.168.255.56/30
+router ospf 1
+  router-id 1.1.1.1
+  network 192.168.255.56 0.0.0.3 area 0   ← lien vers Router1
+  network 192.168.9.0 0.0.0.255 area 0
+  network 192.168.19.0 0.0.0.255 area 0
+exit
+
+!Router1 (id 2.2.2.2) - connecté à Router0 et Router2
+router ospf 1
+  router-id 2.2.2.2
+  network 192.168.255.56 0.0.0.3 area 0   ← lien vers Router0
+  network 192.168.255.84 0.0.0.3 area 0   ← lien vers Router2
+  network 192.168.10.0 0.0.0.255 area 0
+exit
+
+!Router2 (id 3.3.3.3) - connecté à Router1 et internet
+router ospf 1
+  router-id 3.3.3.3
+  network 192.168.255.84 0.0.0.3 area 0   ← lien vers Router1
+  network 192.168.119.0 0.0.0.255 area 0
+exit
+ip route 0.0.0.0 0.0.0.0 [IP_ISP]        ← route par défaut vers internet
+router ospf 1
+  default-information originate           ← propager la route par défaut
+exit
+
+================================================================================
+6. ACL ÉTENDUES (access-list 100 à 199)
+================================================================================
+
+Syntaxe :
+  access-list [num] [permit|deny] [protocole] [source] [destination] [eq port]
+
+Protocoles : ip, tcp, udp, icmp
+  - "ip" = tous les protocoles (pas de port possible)
+  - icmp = pings (pas de port)
+  - tcp/udp = avec port possible (eq [numéro])
+
+PORTS IMPORTANTS :
+  FTP   → 20 et 21 (tcp)
+  SSH   → 22 (tcp)
+  DNS   → 53 (tcp/udp)
+  HTTP  → 80 (tcp/udp)
+  HTTPS → 443 (tcp/udp)
+
+RÈGLES :
+  - Lire de HAUT en BAS, 1ère correspondance gagne
+  - "deny any" implicite caché à la fin
+  - On écrit les "permit", le reste est automatiquement bloqué
+  - TOUJOURS permettre les 2 sens (demande ET réponse)
+
+--- Commandes de base ---
+access-list 100 permit ip any any            Permettre tout
+access-list 100 deny ip any any              Bloquer tout
+access-list 100 permit ip host 192.168.10.5 any   Un hôte source vers n'importe où
+access-list 100 permit ip any host 192.168.200.1  N'importe où vers un hôte destination
+access-list 100 permit ip 192.168.10.0 0.0.0.255 any  Un réseau source
+access-list 100 deny ip any 192.168.0.0 0.0.255.255   Bloquer vers tout le réseau interne
+
+--- Avec port (tcp/udp) ---
+access-list 100 permit tcp any host 192.168.200.10 eq 80     HTTP
+access-list 100 permit udp any host 192.168.200.10 eq 80
+access-list 100 permit tcp any host 192.168.200.10 eq 443    HTTPS
+access-list 100 permit udp any host 192.168.200.10 eq 443
+access-list 100 permit tcp 192.168.10.0 0.0.0.255 host 192.168.201.5 eq 20    FTP
+access-list 100 permit tcp 192.168.10.0 0.0.0.255 host 192.168.201.5 eq 21
+access-list 100 permit icmp any any                          Pings
+
+ATTENTION : "ip eq 80" est INVALIDE → utiliser séparément tcp et udp avec eq
+
+--- Appliquer sur un port ---
+interface GigabitEthernet0/0/0.10
+  ip access-group 100 out    ← OUT = juste avant d'envoyer vers le réseau
+  ip access-group 100 in     ← IN = dès réception (pour internet/entrée externe)
+exit
+
+RÈGLE : Pour le réseau local → utiliser OUT sur les ports des VLAN
+         Pour internet (entrée) → utiliser IN sur le port externe
+
+--- Modifier une ACL ---
+! 1. Afficher la config actuelle :
+do show running-config
+! 2. Copier dans un fichier texte (Notepad++), modifier
+! 3. Supprimer l'ancienne liste :
+no access-list 100
+! 4. Coller la nouvelle liste (l'access-group reste appliqué)
+
+================================================================================
+6a. RECETTES ACL PAR SCÉNARIO
+================================================================================
+
+--- SERVEURS PUBLICS (DMZ) : tout le monde y accède (réseau local + internet) ---
+! Sur le routeur des serveurs publics (out sur port serveurs)
+access-list 100 permit icmp any any
+access-list 100 permit tcp any host 192.168.200.10 eq 80
+access-list 100 permit udp any host 192.168.200.10 eq 80
+access-list 100 permit tcp any host 192.168.200.10 eq 443
+access-list 100 permit udp any host 192.168.200.10 eq 443
+! (implicitement : deny any any)
+
+! Sur le routeur des VLAN hôtes (out sur port VLAN) : permettre réponses serveurs publics
+access-list 100 permit ip 192.168.200.0 0.0.0.255 any
+
+--- SERVEURS PRIVÉS : accès limité aux réseaux/hôtes autorisés ---
+! Sur le routeur des serveurs privés (out sur port serveurs)
+access-list 100 permit icmp 192.168.10.0 0.0.0.255 host 192.168.201.5
+access-list 100 permit tcp 192.168.10.0 0.0.0.255 host 192.168.201.5 eq 80
+access-list 100 permit udp 192.168.10.0 0.0.0.255 host 192.168.201.5 eq 80
+! (deny any any implicite)
+
+! Sur le routeur des VLAN hôtes (out sur port VLAN) : permettre réponses serveurs privés
+access-list 100 permit ip host 192.168.201.5 any
+
+--- VLAN AVEC ACCÈS INTERNET (structure typique sur out port VLAN) ---
+! Permettre accès aux serveurs publics (réponses)
+access-list 100 permit ip 192.168.200.0 0.0.0.255 any
+! Permettre accès aux serveurs privés autorisés (réponses)
+access-list 100 permit ip host 192.168.201.5 any
+! Bloquer le reste du réseau interne
+access-list 100 deny ip 192.168.0.0 0.0.255.255 any
+! Permettre internet
+access-list 100 permit ip any any
+
+--- VLAN SANS ACCÈS INTERNET (structure typique) ---
+access-list 100 permit ip 192.168.200.0 0.0.0.255 any   ← serveurs publics
+access-list 100 permit ip host 192.168.201.5 any         ← serveur privé autorisé
+access-list 100 deny ip 192.168.0.0 0.0.255.255 any     ← bloquer réseau interne
+! deny any any implicite = pas d'internet
+
+--- BLOQUER DES SITES/HÔTES DEPUIS INTERNET (in sur port internet) ---
+access-list 199 deny ip host 45.110.87.5 any
+access-list 199 deny ip 111.9.0.0 0.0.255.255 any
+access-list 199 permit ip any any
+
+================================================================================
+7. COMMANDES DE DIAGNOSTIC
+================================================================================
+
+ping 192.168.1.1            Tester la connexion
+traceroute 192.168.1.1      Afficher les sauts
+show ip route               Table de routage
+show ip interface brief     Résumé des ports (IP, état)
+show vlan brief             Résumé des VLANs et ports
+show vtp status             État VTP
+show running-config         Config actuelle complète
+show running-config | include access-list  Filtrer par mot-clé
+
+================================================================================
+8. CONFIGURATION LIENS /30 ENTRE ROUTEURS (rappel)
+================================================================================
+
+Réseau /30 : 255.255.255.252 (wildcard 0.0.0.3)
+Seulement 2 adresses hôtes par réseau → économise les IPs
+
+Exemple - Bloc 192.168.255.0/24 découpé en /30 :
+  192.168.255.0/30  → R0: .1  R1: .2   (réseau: .0, broadcast: .3)
+  192.168.255.4/30  → R1: .5  R2: .6
+  192.168.255.8/30  → R2: .9  R3: .10
+  192.168.255.12/30 → ...
+
+--- Configurer le lien entre 2 routeurs ---
+!Sur Router0
+interface GigabitEthernet 0/0/1
+  ip address 192.168.255.57 255.255.255.252
+  no shutdown
+exit
+
+!Sur Router1
+interface GigabitEthernet 0/0/1
+  ip address 192.168.255.58 255.255.255.252
+  no shutdown
+exit
+
+================================================================================
+9. MÉMO RAPIDE — ERREURS COMMUNES
+================================================================================
+
+- VTP ne fonctionne pas → vérifier que les ports entre switches sont en TRUNK
+- VTP ne fonctionne pas → vérifier que domaine ET mot de passe sont identiques
+- Router on a stick ne fonctionne pas → vérifier port switch vers routeur en TRUNK
+- DHCP ne distribue pas → vérifier que excluded-address ne couvre pas toute la plage
+- ACL bloque tout → vérifier l'ordre des règles (1ère correspondance gagne)
+- ACL bloque les réponses → ne pas oublier de permettre les 2 sens (demande + réponse)
+- "ip eq 80" invalide → utiliser "tcp eq 80" ET "udp eq 80" séparément
+- OSPF ne propage pas → vérifier que tous les réseaux (y compris /30) sont dans "network"
+- Toujours faire WRITE après configuration !
+
+================================================================================
