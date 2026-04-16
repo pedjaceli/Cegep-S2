@@ -1,0 +1,49 @@
+! --------------------------------------------------------
+!  Router 0
+! --------------------------------------------------------
+! ######################## Agents ########################
+! # Supprimer l'ancienne liste ACL au complet
+no access-list ...
+
+! # Appliquer la liste ACL sur le port virtuel du routeur
+access-list ... GigabitEthernet ...
+exit
+
+! # Autres Agents
+
+
+! # Tous les Serveurs publics
+
+
+! # Imprimante partagée du réseau des Infirmieres
+
+
+! # Bloquer le reste du réseau local
+
+
+! # Permettre internet
+
+
+! #################### Fin des Agents #####################
+
+! ##################### Infirmieres #######################
+! # Supprimer l'ancienne liste ACL au complet
+
+
+! # Appliquer la liste ACL sur le port virtuel du routeur
+
+exit
+
+! # Tous les Serveurs publics
+
+
+! # Permettre à tout le monde du réseau local d'utiliser l'imprimante
+
+
+! # Bloquer le reste du réseau local
+
+
+! # Permettre internet
+
+
+! ################ Fin des Infirmieres ####################

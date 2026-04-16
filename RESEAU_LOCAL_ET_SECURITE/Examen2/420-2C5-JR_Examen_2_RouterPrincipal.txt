@@ -1,0 +1,61 @@
+! --------------------------------------------------------
+!  RouterPrincipal
+! --------------------------------------------------------
+! #################### Serveurs publics ##################
+! # Supprimer l'ancienne liste ACL au complet
+
+
+! # Appliquer la liste ACL sur le port virtuel du routeur
+
+exit
+
+! # Permettre les pings pour tous les serveurs publics pour tout le monde (réseau local et internet)
+
+
+! # Serveur DNS (port DNS 53 seulement en UDP)
+
+
+! # Serveur Web Public (ports HTTP 80 et HTTPS 443)
+
+
+! ############# Fin des Serveurs publics ##############
+
+! ################## Serveurs privés ##################
+! # Supprimer l'ancienne liste ACL au complet
+
+
+! # Appliquer la liste ACL sur le port virtuel du routeur
+
+exit
+
+! # Serveur Portail 192.168.226.100 (port HTTPS 443 et ping)
+! Agents (Router0)
+
+
+! Agents (Router1)
+
+
+! # Serveur Triage 192.168.226.150 (port SSH 22 et ping) 
+! Infirmieres
+
+
+! ############### Fin des Serveurs privés ################
+
+! ###################### Internet ########################
+! # Supprimer l'ancienne liste ACL au complet
+
+
+! # Appliquer la liste ACL à l'entrée du port Internet (in)
+
+exit
+
+! # Bloquer Reddit
+
+
+! # Bloquer le réseau douteux au complet (/20)
+
+
+! # Permettre le reste sur Internet
+
+
+! ################## Fin de Internet ####################

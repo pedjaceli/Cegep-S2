@@ -1,0 +1,296 @@
+=======================================
+          Examen - config
+=======================================
+vtp mode server
+vtp domain examen
+vtp password examen123
+------------------------
+vtp mode client
+vtp domain examen
+vtp password examen123
+------------------------
+interface GigabitEthernet 0/1
+switchport mode trunk
+-------------------------
+interface GigabitEthernet 0/2
+switchport mode trunk
+
+vlan 19
+name Agents
+exit
+
+vlan 29
+name Infirmieres
+exit
+
+vlan 39
+name Securite
+exit
+
+vlan 49
+name Medecins
+exit
+-----------------------------
+!SWITCH0
+interface range fastEthernet 0/1 - 8
+switchport mode access
+switchport access vlan 19
+exit
+interface range fastEthernet 0/9 - 13
+switchport mode access
+switchport access vlan 29
+exit
+interface range fastEthernet 0/14 - 20
+switchport mode access
+switchport access vlan 39
+exit
+interface range fastEthernet 0/21 - 24
+shutdown
+exit
+-------------------------------------
+!SWITCH1
+interface range fastEthernet 0/1 - 7
+switchport mode access
+switchport access vlan 29
+exit
+interface range fastEthernet 0/13 - 17
+switchport mode access
+switchport access vlan 39
+exit
+interface range fastEthernet 0/8 - 12
+shutdown
+exit
+interface range fastEthernet 0/18 - 24
+shutdown
+exit
+--------------------------------------
+!SWITCH2
+interface range fastEthernet 0/1 - 5
+switchport mode access
+switchport access vlan 19
+exit
+interface range fastEthernet 0/6 - 10
+switchport mode access
+switchport access vlan 29
+exit
+interface range fastEthernet 0/11 - 15
+switchport mode access
+switchport access vlan 19
+exit
+interface range fastEthernet 0/20 - 24
+switchport mode access
+switchport access vlan 39
+exit
+interface range fastEthernet 0/17 - 19
+shutdown
+exit
+---------------------------------------
+!SWITCH3
+interface range fastEthernet 0/1 - 9
+switchport mode access
+switchport access vlan 19
+exit
+interface range fastEthernet 0/10 - 24
+switchport mode access
+switchport access vlan 49
+exit
+---------------------------------------
+!Routeur0
+interface GigabitEthernet 0/0/2
+switchport mode trunk
+exit
+interface GigabitEthernet0/0/2
+no shutdown
+no ip address
+exit
+interface GigabitEthernet0/0/0.19
+encapsulation dot1q 19
+ip address 192.168.19.1 255.255.255.0
+exit
+interface GigabitEthernet0/0/0.29
+encapsulation dot1q 29
+ip address 192.168.29.1 255.255.255.0
+exit
+interface GigabitEthernet0/0/0.39
+encapsulation dot1q 39
+ip address 192.168.39.1 255.255.255.0
+exit
+interface GigabitEthernet0/0/0.49
+encapsulation dot1q 49
+ip address 192.168.49.1 255.255.255.0
+exit
+----------------------------------------
+!Router0
+ip dhcp pool vlan19
+  network 192.168.19.0 255.255.255.0
+  default-router 192.168.19.1
+  dns-server 192.168.225.33
+exit
+ip dhcp pool vlan29
+  network 192.168.29.0 255.255.255.0
+  default-router 192.168.29.1
+  dns-server 192.168.225.33
+exit
+ip dhcp pool vlan39
+  network 192.168.39.0 255.255.255.0
+  default-router 192.168.39.1
+  dns-server 192.168.225.33
+exit
+ip dhcp pool vlan49
+  network 192.168.49.0 255.255.255.0
+  default-router 192.168.49.1
+  dns-server 192.168.225.33
+exit
+-----------------------------------------
+!Router1
+interface GigabitEthernet0/0/0.19
+encapsulation dot1q 19
+ip address 192.168.19.1 255.255.255.0
+exit
+interface GigabitEthernet0/0/0.20
+encapsulation dot1q 20
+ip address 192.168.20.1 255.255.255.0
+exit
+interface GigabitEthernet0/0/0.49
+encapsulation dot1q 49
+ip address 192.168.49.1 255.255.255.0
+exit
+------------------------------------------
+!Router1
+ip dhcp pool vlan19
+network 192.168.19.0 255.255.255.0
+default-router 192.168.19.1
+dns-server 192.168.225.33
+exit
+ip dhcp excluded-address 192.168.19.1 192.168.19.49
+ip dhcp excluded-address 192.168.19.151 192.168.19.255
+exit
+ip dhcp pool vlan19
+network 192.168.20.0 255.255.255.0
+default-router 192.168.20.1
+dns-server 192.168.225.33
+exit
+ip dhcp excluded-address 192.168.20.1 192.168.20.49
+ip dhcp excluded-address 192.168.20.151 192.168.20.255
+exit
+ip dhcp pool vlan49
+network 192.168.49.0 255.255.255.0
+default-router 192.168.49.1
+dns-server 192.168.225.33
+exit
+ip dhcp excluded-address 192.168.49.1 192.168.49.74
+ip dhcp excluded-address 192.168.49.176 192.168.49.255
+exit
+
+!Sur le Router0
+!(192.168.19.16)
+interface GigabitEthernet 0/0/2 
+ip address 192.168.220.17 255.255.255.252
+no shutdown
+exit
+
+!Sur le Router1
+!(192.168.19.16)
+interface GigabitEthernet 0/0/1 
+ip address 192.168.220.18 255.255.255.252
+no shutdown
+exit
+!(192.168.29.28)
+interface GigabitEthernet 0/0/2 
+ip address 192.168.220.29 255.255.255.252
+no shutdown
+exit
+------------------------------------------
+!Sur le router principal
+!(192.168.29.28) 
+interface GigabitEthernet 0/0/1
+ip address 192.168.220.30 255.255.255.252
+no shutdown
+exit
+!(88.77.66.9/29)
+interface GigabitEthernet 0/0/2
+ip address 192.168.66.14 255.255.255.248
+no shutdown
+exit
+------------------------------------------
+!RouterIsp
+!(88.77.66.9/29)
+interface GigabitEthernet 0/0/0
+ip address 192.168.66.9 255.255.255.248
+no shutdown
+exit
+interface GigabitEthernet 0/0/1
+ip address 205.237.161.54 255.255.240.0
+no shutdown
+exit
+interface GigabitEthernet 0/0/2
+ip address 118.85.0.1 255.255.0.0
+no shutdown
+exit
+--------------------------------------
+!Router0
+router ospf 1
+router-id 1.1.1.1
+network 192.168.220.16 0.0.0.3 area 0
+network 192.168.19.0 0.0.0.255 area 0
+network 192.168.29.0 0.0.0.255 area 0
+network 192.168.39.0 0.0.0.255 area 0
+--------------------------------------
+!Router1
+router ospf 1
+router-id 2.2.2.2
+network 192.168.220.16 0.0.0.3 area 0
+network 192.168.220.28 0.0.0.3 area 0
+network 192.168.19.0 0.0.0.255 area 0
+network 192.168.49.0 0.0.0.255 area 0
+--------------------------------------
+!RouterPrincipal
+router ospf 1
+router-id 3.3.3.3
+network 192.168.220.28 0.0.0.3 area 0
+network 192.168.225.0 0.0.0.255 area 0
+network 192.168.226.0 0.0.0.255 area 0
+--------------------------------------
+!Router0
+ip route 0.0.0.0 0.0.0.0 192.168.220.18
+exit
+!Router1
+ip route 0.0.0.0 0.0.0.0 192.168.220.30
+exit
+!RouterPrincipal
+ip route 0.0.0.0 0.0.0.0 88.77.66.9
+exit
+===================================
+---------------ACL-----------------
+===================================
+!Agents
+access-list 100 permit ip 192.168.20.0 0.0.0.255 any
+access-list 100 permit ip 192.168.19.0 0.0.0.255 any
+access-list 100 permit tcp host 192.168.225.33 any eq 80
+access-list 100 permit tcp host 192.168.225.33 any eq 443
+access-list 100 permit udp host 192.168.225.33 any eq 80
+access-list 100 permit udp host 192.168.225.33 any eq 443
+access-list 100 permit ip host 192.168.29.195 any
+access-list 100 deny ip 192.168.0.0 0.0.255.255 any
+access-list 100 permit ip any any
+exit
+interface GigabitEthernet0/0/2
+ip access-group 100 out
+exit
+
+!RouteurPrincipal
+access-list 101 permit tcp 192.168.19.0 0.0.0.255 any eq 80
+access-list 101 permit udp 192.168.19.0 0.0.0.255 any eq 80
+access-list 101 permit tcp 192.168.19.0 0.0.0.255 any eq 443
+access-list 101 permit udp 192.168.19.0 0.0.0.255 any eq 443
+access-list 101 permit tcp 192.168.20.0 0.0.0.255 any eq 80
+access-list 101 permit udp 192.168.20.0 0.0.0.255 any eq 80
+access-list 101 permit tcp 192.168.20.0 0.0.0.255 any eq 443
+access-list 101 permit udp 192.168.20.0 0.0.0.255 any eq 443
+
+access-list 101 permit tcp 192.168.19.0 0.0.0.255 host 192.168.226.100 eq 443
+access-list 101 permit udp 192.168.20.0 0.0.0.255 host 192.168.226.100 eq 443
+exit
+interface GigabitEthernet0/0/1
+ip access-group 101 out
+exit

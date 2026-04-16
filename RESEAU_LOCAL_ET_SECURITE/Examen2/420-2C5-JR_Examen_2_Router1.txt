@@ -1,0 +1,30 @@
+! --------------------------------------------------------
+! Router1
+! --------------------------------------------------------
+! ######################## Agents ########################
+! # Supprimer l'ancienne liste ACL au complet
+
+
+! # Appliquer la liste ACL sur le port virtuel du routeur
+
+exit
+
+! # Autres Agents
+
+
+! # Tous les Serveurs publics
+
+
+! # ServeurPortail
+
+
+! # Imprimante partagée du réseau des Infirmieres
+
+
+! # Bloquer le reste du réseau local
+
+
+! # Permettre internet
+
+
+! ################### Fin des Agents ######################
