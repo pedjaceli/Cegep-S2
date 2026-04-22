@@ -1,0 +1,39 @@
+# - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Table Heros
+Cette table c'est pour vos personnages. On va y préciser son nom, comme Socrate et Platon.
+Son niveau peut varier entre 1 et 99.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Table Classes
+Ça peut être des classes bien simples, comme Archer, Guerrier, Amazon, Barde, Voleur...
+La description peut être courte ou longue. Pour le voleur, on pourrait écrire "Qui se spécialise dans le vol d'objet. Est très agile et ne fait pas de bruit."
+# - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Table Competences
+Boule de feu avec 4 en coût de mana, qui fait 10 de dégâts. C'est une compétence classique, il suffit de crier "boule de feu" et une boule de flame sort de vos mains. Vous pouvez la lancer sur un ennemi!
+Téléportation, qui coûte 10 en mana, qui fait 0 dégât. Permet de se téléporter à environ 30 mètres plus loin. Pratique pour passer outre les tortues pas contentes.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Table Quetes
+Le titre "Mais où est Charlie?" qui donne 22 pièces d'or et qui peut se faire au niveau 2.
+Colis perdu de Pirolateur, qui donne 110 pièces d'or et qui se fait au niveau 5.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Table Monstres
+Le Dragon blanc aux yeux bleus, avec 2500 points de vie qui est de niveau 80.
+Baie de Tom, 67 points de vie, niveau 13
+Le Monarque des Tortues de Plomberie, 888 points de vie, niveau 50
+# - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Table Loots
+L'épée maître, objet de rareté unique d'une valeur de 69420 pièces d'or!
+Pioche en diamant, rare, 9001 pièces d'or.
+Pokéball, commun, 200 pièces d'or.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Table Configurations
+Ajoutez simplement 5 matricules, dont 1 qui débute avec un zéro pour tester.
+0123456
+1234567
+6742069
+# - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Table ListeNoireTaverne
+67 jours a été banni pour la raison suivante: A échoué de voler 13 fois le pauvre mixologue.
+666 jours, a été banni pour la raison suivante: A cassé tous les petits pots en céramique dans l'espoir de trouver des rubis verts.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Pour les autres tables, comme ce sont des associations, vous pouvez simplement mettre des id existants dans les tables liées.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - -
