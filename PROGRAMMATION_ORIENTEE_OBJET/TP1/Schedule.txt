@@ -67,6 +67,22 @@ namespace TP1
         }
 
 
+        /// <summary>
+        /// Affiche les rendez-vous dans le contexte d'un patient (avec indentation)
+        /// </summary>
+        public void PrintForPatient(string indent)
+        {
+            if (_appointments.Count == 0) return;
+
+            Console.WriteLine($"{indent}Rendez-vous:");
+            Console.WriteLine($"{indent}-----------");
+            foreach (Appointment appointment in _appointments)
+            {
+                Console.WriteLine($"{indent}{appointment.ToPatientString()}");
+            }
+        }
+
+
         private List<Appointment> _appointments = new();
     }
 }

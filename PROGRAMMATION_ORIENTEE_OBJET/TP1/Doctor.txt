@@ -3,7 +3,7 @@ namespace TP1
     class Doctor : Person
     {
         /// <summary>
-        /// Constructeur - demande le prénom et le nom à l'utilisateur
+        /// Constructeur qui demande le prénom et le nom à l'utilisateur
         /// </summary>
         public Doctor() : base()
         {
@@ -12,7 +12,7 @@ namespace TP1
 
 
         /// <summary>
-        /// Constructeur - recrée un médecin à partir d'une ligne du fichier de sauvegarde
+        /// Constructeur qui recrée un médecin à partir d'ue ligne du fichier de sauvegarde
         /// </summary>
         public Doctor(int id, string firstName, string lastName) : base(id, firstName, lastName)
         {
@@ -25,7 +25,7 @@ namespace TP1
         /// </summary>
         public bool IsAvailable
         {
-            get { return _patients.Count < MaxPatients; }
+            get { }
         }
 
 
@@ -34,10 +34,7 @@ namespace TP1
         /// </summary>
         public void AssignPatient(Patient patient)
         {
-            if (IsAvailable)
-            {
-                _patients.Add(patient);
-            }
+
         }
 
 
@@ -46,7 +43,7 @@ namespace TP1
         /// </summary>
         public int PatientCount
         {
-            get { return _patients.Count; }
+            get { }
         }
 
 
@@ -55,7 +52,7 @@ namespace TP1
         /// </summary>
         public int AppointmentCount
         {
-            get { return PersonSchedule.AppointmentCount; }
+            get { }
         }
 
 
@@ -64,7 +61,7 @@ namespace TP1
         /// </summary>
         public bool HasConflict(Appointment appointment)
         {
-            return PersonSchedule.HasConflict(appointment);
+
         }
 
 
@@ -73,23 +70,16 @@ namespace TP1
         /// </summary>
         public void AddAppointment(Appointment appointment)
         {
-            PersonSchedule.Add(appointment);
+
         }
 
 
         /// <summary>
         /// Affiche les informations du médecin
-        /// Format: 2) Louise Poirier, patients: 1 (Sami Melançon)
         /// </summary>
         public void Print()
         {
-            string patientNames = "";
-            for (int i = 0; i < _patients.Count; i++)
-            {
-                if (i > 0) patientNames += ", ";
-                patientNames += _patients[i].FullName;
-            }
-            Console.WriteLine($"  {Id}) {FullName}, patients: {_patients.Count} ({patientNames})");
+
         }
 
 
@@ -98,7 +88,7 @@ namespace TP1
         /// </summary>
         public string GetFileLine()
         {
-            return FileLine;
+
         }
 
 

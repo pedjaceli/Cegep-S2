@@ -38,7 +38,7 @@ namespace TP1
 
         /// <summary>
         /// Vérifie si ce rendez-vous est en conflit avec un autre
-        /// Deux rendez-vous sont en conflit s'ils se chevauchent
+        /// Deux rendez-vous sont en conflit s'ils ont lieu en même temps
         /// </summary>
         public bool ConflictsWith(Appointment other)
         {
@@ -48,11 +48,19 @@ namespace TP1
 
         /// <summary>
         /// Affiche les informations du rendez-vous
-        /// Format: 2026-04-16 12:00:00 (30 minutes) pour patient 1 et médecin 2
         /// </summary>
         public void Print()
         {
             Console.WriteLine($"{_dateTime:yyyy-MM-dd HH:mm:ss} ({_duration} minutes) pour patient {_patient.Id} et médecin {_doctor.Id}");
+        }
+
+
+        /// <summary>
+        /// Format pour l'affichage du rendez-vous si le patient a un médécin
+        /// </summary>
+        public string ToPatientString()
+        {
+            return $"{_dateTime:yyyy-MM-dd HH:mm:ss} ({_duration} minutes) avec médecin {_doctor.Id}";
         }
 
 

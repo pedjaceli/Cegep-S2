@@ -3,33 +3,11 @@ namespace TP1
     class PatientManager
     {
         /// <summary>
-        /// Constructeur - reçoit le gestionnaire de médecins et charge le fichier de sauvegarde
+        /// Constructeur qui reçoit le gestionnaire de médecinss et charge le fichier de sauvegarde
         /// </summary>
         public PatientManager(DoctorManager doctorManager)
         {
-            _doctorManager = doctorManager;
-            doctorManager.SetPatientManager(this);
 
-            try
-            {
-                using (StreamReader input = new(PatientFileName))
-                {
-                    string? line = input.ReadLine();
-                    while (line != null)
-                    {
-                        string[] values = line.Split(Separator);
-                        int id = Convert.ToInt32(values[0]);
-                        string firstName = values[1];
-                        string lastName = values[2];
-                        _patients.Add(new Patient(id, firstName, lastName));
-                        line = input.ReadLine();
-                    }
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                // Le fichier n'existe pas, on démarre sans données
-            }
         }
 
 
@@ -38,17 +16,7 @@ namespace TP1
         /// </summary>
         public void Add()
         {
-            Patient patient = new();
 
-            Doctor availableDoctor = _doctorManager.FindAvailableDoctor();
-            if (availableDoctor != null)
-            {
-                availableDoctor.AssignPatient(patient);
-                patient.AssignDoctor(availableDoctor);
-            }
-
-            _patients.Add(patient);
-            Console.WriteLine($"Patient {patient.Id} ajouté");
         }
 
 
@@ -57,28 +25,7 @@ namespace TP1
         /// </summary>
         public void Print()
         {
-            List<Patient> withDoctor = new();
-            List<Patient> withoutDoctor = new();
 
-            foreach (Patient p in _patients)
-            {
-                if (p.HasDoctor) withDoctor.Add(p);
-                else withoutDoctor.Add(p);
-            }
-
-            string header1 = $"Patients avec médecin ({withDoctor.Count})";
-            Console.WriteLine(header1);
-            Console.WriteLine(new string('-', header1.Length));
-            foreach (Patient p in withDoctor)
-                p.Print();
-
-            Console.WriteLine();
-
-            string header2 = $"Patients sans médecin ({withoutDoctor.Count})";
-            Console.WriteLine(header2);
-            Console.WriteLine(new string('-', header2.Length));
-            foreach (Patient p in withoutDoctor)
-                p.Print();
         }
 
 
@@ -87,11 +34,7 @@ namespace TP1
         /// </summary>
         public void Save()
         {
-            using (StreamWriter output = new(PatientFileName))
-            {
-                foreach (Patient p in _patients)
-                    output.WriteLine(p.GetFileLine());
-            }
+
         }
 
 
@@ -100,85 +43,7 @@ namespace TP1
         /// </summary>
         public void MakeAppointment()
         {
-            // Demander l'ID du patient
-            Console.Write("Indiquez l'identifiant du patient: ");
-            if (!int.TryParse(Console.ReadLine(), out int patientId))
-            {
-                Console.WriteLine("Valeur invalide.");
-                return;
-            }
 
-            Patient patient = FindById(patientId);
-            if (patient == null)
-            {
-                Console.WriteLine("Patient inconnu.");
-                return;
-            }
-
-            // Trouver le médecin
-            Doctor doctor;
-            if (patient.HasDoctor)
-            {
-                doctor = patient.Doctor;
-            }
-            else
-            {
-                doctor = _doctorManager.FindDoctorWithFewestAppointments();
-                if (doctor == null)
-                {
-                    Console.WriteLine("Aucun médecin disponible.");
-                    return;
-                }
-            }
-
-            // Demander la date et l'heure
-            Console.Write("Indiquez la date et l'heure voulue (A/M/J H:M): ");
-            if (!DateTime.TryParse(Console.ReadLine(), out DateTime dateTime))
-            {
-                Console.WriteLine("Valeur invalide.");
-                return;
-            }
-
-            if (dateTime <= DateTime.Now)
-            {
-                Console.WriteLine("Doit être une date future");
-                return;
-            }
-
-            // Demander la durée
-            Console.Write($"Indiquez la catégorie de rendez-vous: A ({Appointment.DurationA} minutes), B ({Appointment.DurationB} minutes) ou C ({Appointment.DurationC} minutes): ");
-            string durationChoice = Console.ReadLine().Trim().ToUpper();
-
-            int duration;
-            switch (durationChoice)
-            {
-                case "A": duration = Appointment.DurationA; break;
-                case "B": duration = Appointment.DurationB; break;
-                case "C": duration = Appointment.DurationC; break;
-                default:
-                    Console.WriteLine("Choix invalide.");
-                    return;
-            }
-
-            // Créer le rendez-vous et vérifier les conflits
-            Appointment appointment = new(dateTime, duration, patient, doctor);
-
-            if (patient.HasConflict(appointment))
-            {
-                Console.WriteLine("Ce patient a déjà un rendez-vous à ce moment");
-                return;
-            }
-
-            if (doctor.HasConflict(appointment))
-            {
-                Console.WriteLine("Ce médecin a déjà un rendez-vous à ce moment");
-                return;
-            }
-
-            patient.AddAppointment(appointment);
-            doctor.AddAppointment(appointment);
-            Console.WriteLine("Rendez-vous ajouté.");
-            appointment.Print();
         }
 
 
@@ -187,12 +52,7 @@ namespace TP1
         /// </summary>
         public Patient GetNextWaitingPatient()
         {
-            foreach (Patient p in _patients)
-            {
-                if (!p.HasDoctor)
-                    return p;
-            }
-            return null;
+
         }
 
 
@@ -201,12 +61,7 @@ namespace TP1
         /// </summary>
         private Patient FindById(int id)
         {
-            foreach (Patient p in _patients)
-            {
-                if (p.Id == id)
-                    return p;
-            }
-            return null;
+
         }
 
 
