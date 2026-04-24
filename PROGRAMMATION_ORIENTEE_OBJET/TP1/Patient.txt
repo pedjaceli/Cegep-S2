@@ -25,7 +25,7 @@ namespace TP1
         /// </summary>
         public bool HasDoctor
         {
-            get { }
+            get { return _doctor != null; }
         }
 
 
@@ -34,7 +34,7 @@ namespace TP1
         /// </summary>
         public void AssignDoctor(Doctor doctor)
         {
-
+            _doctor = doctor;
         }
 
 
@@ -43,7 +43,7 @@ namespace TP1
         /// </summary>
         public Doctor Doctor
         {
-            get { }
+            get { return _doctor; }
         }
 
 
@@ -52,7 +52,7 @@ namespace TP1
         /// </summary>
         public bool HasConflict(Appointment appointment)
         {
-
+            return PersonSchedule.HasConflict(appointment);
         }
 
 
@@ -61,7 +61,7 @@ namespace TP1
         /// </summary>
         public void AddAppointment(Appointment appointment)
         {
-
+            PersonSchedule.Add(appointment);
         }
 
 
@@ -70,7 +70,16 @@ namespace TP1
         /// </summary>
         public void Print()
         {
+            if (_doctor != null)
+            {
+                Console.WriteLine($"  {Id}) {FullName}, médecin: {_doctor.Id} ({_doctor.FullName})");
+            }
+            else
+            {
+                Console.WriteLine($"  {Id}) {FullName}, en attente d'un médecin");
+            }
 
+            PersonSchedule.PrintForPatient("     ");
         }
 
 
@@ -79,7 +88,7 @@ namespace TP1
         /// </summary>
         public string GetFileLine()
         {
-
+            return FileLine;
         }
 
 

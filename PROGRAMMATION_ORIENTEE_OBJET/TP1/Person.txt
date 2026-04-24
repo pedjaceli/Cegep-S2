@@ -7,7 +7,10 @@ namespace TP1
         /// </summary>
         protected Person()
         {
-
+            _id = ++_lastId;
+            _firstName = AskName("Indiquez le prénom: ");
+            _lastName = AskName("Indiquez le nom: ");
+            _schedule = new Schedule();
         }
 
 
@@ -16,7 +19,14 @@ namespace TP1
         /// </summary>
         protected Person(int id, string firstName, string lastName)
         {
+            _id = id;
+            _firstName = firstName;
+            _lastName = lastName;
+            _schedule = new Schedule();
 
+            // On s'assure que le compteur ne génère pas un ID déjà utilisé
+            if (id > _lastId)
+                _lastId = id;
         }
 
 
@@ -25,7 +35,7 @@ namespace TP1
         /// </summary>
         public int Id
         {
-            get { }
+            get { return _id; }
         }
 
 
@@ -34,7 +44,7 @@ namespace TP1
         /// </summary>
         public string FullName
         {
-            get { }
+            get { return $"{_firstName} {_lastName}"; }
         }
 
 
@@ -43,7 +53,7 @@ namespace TP1
         /// </summary>
         protected void PrintCommon()
         {
-
+            Console.WriteLine($"{_id,5} - {_firstName} {_lastName}");
         }
 
 
@@ -52,7 +62,7 @@ namespace TP1
         /// </summary>
         protected string FileLine
         {
-            get { }
+            get { return $"{_id};{_firstName};{_lastName}"; }
         }
 
 
@@ -61,14 +71,21 @@ namespace TP1
         /// </summary>
         protected Schedule PersonSchedule
         {
-            get { }
+            get { return _schedule; }
         }
 
 
         // Demande un prénom ou un nom à l'utilisateur, redemande tant qu'il est vide
         private static string AskName(string prompt)
         {
-
+            while (true)
+            {
+                Console.Write(prompt);
+                string value = Console.ReadLine().Trim();
+                if (!string.IsNullOrWhiteSpace(value))
+                    return value;
+                Console.WriteLine("Le champ ne peut pas être vide.");
+            }
         }
 
 

@@ -25,7 +25,7 @@ namespace TP1
         /// </summary>
         public bool IsAvailable
         {
-            get { }
+            get { return _patients.Count < MaxPatients; }
         }
 
 
@@ -34,7 +34,10 @@ namespace TP1
         /// </summary>
         public void AssignPatient(Patient patient)
         {
-
+            if (IsAvailable)
+            {
+                _patients.Add(patient);
+            }
         }
 
 
@@ -43,7 +46,7 @@ namespace TP1
         /// </summary>
         public int PatientCount
         {
-            get { }
+            get { return _patients.Count; }
         }
 
 
@@ -52,7 +55,7 @@ namespace TP1
         /// </summary>
         public int AppointmentCount
         {
-            get { }
+            get { return PersonSchedule.AppointmentCount; }
         }
 
 
@@ -61,7 +64,7 @@ namespace TP1
         /// </summary>
         public bool HasConflict(Appointment appointment)
         {
-
+            return PersonSchedule.HasConflict(appointment);
         }
 
 
@@ -70,7 +73,7 @@ namespace TP1
         /// </summary>
         public void AddAppointment(Appointment appointment)
         {
-
+            PersonSchedule.Add(appointment);
         }
 
 
@@ -79,7 +82,22 @@ namespace TP1
         /// </summary>
         public void Print()
         {
+            if (_patients.Count == 0)
+            {
+                Console.WriteLine($"  {Id}) {FullName}, aucun patient");
+                return;
+            }
 
+            string prefix = $"  {Id}) {FullName}, patients: ";
+            string indent = new string(' ', prefix.Length);
+
+            Console.Write(prefix);
+            for (int i = 0; i < _patients.Count; i++)
+            {
+                if (i > 0) Console.Write($",\n{indent}");
+                Console.Write($"{_patients[i].Id} ({_patients[i].FullName})");
+            }
+            Console.WriteLine();
         }
 
 
@@ -88,7 +106,7 @@ namespace TP1
         /// </summary>
         public string GetFileLine()
         {
-
+            return FileLine;
         }
 
 

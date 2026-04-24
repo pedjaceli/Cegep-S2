@@ -7,7 +7,37 @@ namespace TP1
         /// </summary>
         public DoctorManager()
         {
+            try
+            {
+                using (StreamReader input = new(DoctorFileName))
+                {
+                    int lineNumber = 0;
+                    string? line = input.ReadLine();
+                    while (line != null)
+                    {
+                        ++lineNumber;
 
+                        try
+                        {
+                            string[] values = line.Split(Separator);
+                            int id = Convert.ToInt32(values[0]);
+                            string firstName = values[1];
+                            string lastName = values[2];
+                            _doctors.Add(new Doctor(id, firstName, lastName));
+                        }
+                        catch (Exception exception)
+                        {
+                            Console.WriteLine($"Ligne {lineNumber} invalide dans {DoctorFileName}: {exception.Message}");
+                        }
+
+                        line = input.ReadLine();
+                    }
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                // Le fichier n'existe pas, on démarre sans données
+            }
         }
 
 
@@ -17,7 +47,7 @@ namespace TP1
         /// </summary>
         public void SetPatientManager(PatientManager patientManager)
         {
-
+            _patientManager = patientManager;
         }
 
 
@@ -26,7 +56,23 @@ namespace TP1
         /// </summary>
         public void Add()
         {
+            Doctor doctor = new();
 
+            // Assigne les patients en attente dans l'ordre d'arrivée (FIFO)
+            if (_patientManager != null)
+            {
+                Patient waiting = _patientManager.GetNextWaitingPatient();
+                while (waiting != null && doctor.IsAvailable)
+                {
+                    doctor.AssignPatient(waiting);
+                    waiting.AssignDoctor(doctor);
+                    _patientManager.MoveToAssigned();
+                    waiting = _patientManager.GetNextWaitingPatient();
+                }
+            }
+
+            _doctors.Add(doctor);
+            Console.WriteLine($"Médecin {doctor.Id} ajouté");
         }
 
 
@@ -35,7 +81,28 @@ namespace TP1
         /// </summary>
         public void Print()
         {
+            List<Doctor> available = new();
+            List<Doctor> full = new();
 
+            foreach (Doctor d in _doctors)
+            {
+                if (d.IsAvailable) available.Add(d);
+                else full.Add(d);
+            }
+
+            string header1 = $"Médecins disponibles ({available.Count})";
+            Console.WriteLine(header1);
+            Console.WriteLine(new string('-', header1.Length));
+            foreach (Doctor d in available)
+                d.Print();
+
+            Console.WriteLine();
+
+            string header2 = $"Médecins non disponibles ({full.Count})";
+            Console.WriteLine(header2);
+            Console.WriteLine(new string('-', header2.Length));
+            foreach (Doctor d in full)
+                d.Print();
         }
 
 
@@ -44,7 +111,11 @@ namespace TP1
         /// </summary>
         public void Save()
         {
-
+            using (StreamWriter output = new(DoctorFileName))
+            {
+                foreach (Doctor d in _doctors)
+                    output.WriteLine(d.GetFileLine());
+            }
         }
 
 
@@ -53,7 +124,12 @@ namespace TP1
         /// </summary>
         public Doctor FindAvailableDoctor()
         {
-
+            foreach (Doctor d in _doctors)
+            {
+                if (d.IsAvailable)
+                    return d;
+            }
+            return null;
         }
 
 
@@ -62,7 +138,12 @@ namespace TP1
         /// </summary>
         public Doctor FindById(int id)
         {
-
+            foreach (Doctor d in _doctors)
+            {
+                if (d.Id == id)
+                    return d;
+            }
+            return null;
         }
 
 
@@ -71,7 +152,19 @@ namespace TP1
         /// </summary>
         public Doctor FindDoctorWithFewestAppointments()
         {
+            Doctor minDoctor = null;
+            int minCount = int.MaxValue;
 
+            foreach (Doctor d in _doctors)
+            {
+                if (d.AppointmentCount < minCount)
+                {
+                    minCount = d.AppointmentCount;
+                    minDoctor = d;
+                }
+            }
+
+            return minDoctor;
         }
 
 

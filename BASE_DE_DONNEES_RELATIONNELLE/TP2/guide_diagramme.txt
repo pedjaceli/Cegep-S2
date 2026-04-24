@@ -1,0 +1,137 @@
+╔══════════════════════════════════════════════════════════════════════════════════════════════╗
+║                        GUIDE VISUEL - DIAGRAMME draw.io  TP2                                 ║
+╚══════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  LÉGENDE:
+  PK = Clé primaire       FK = Clé étrangère      UK = Clé unique
+  AI = AUTO_INCREMENT      * = champ obligatoire
+
+
+═══════════════════════════════════════════════════════════════════════════════════
+  TABLES ET LEURS CHAMPS
+═══════════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────┐        ┌─────────────────────┐
+│       Heros         │        │       Classes       │
+├─────────────────────┤        ├─────────────────────┤
+│ PK  id_heros  INT AI│        │ PK  id_classe  INT AI│
+│  *  nom  VARCHAR(100│        │  *  nom_classe      │
+│  *  niveau  TINYINT │        │         VARCHAR(100)│
+│     CHECK(1..99)    │        │  *  description     │
+│ FK  id_classe  INT  │        │         VARCHAR(255)│
+└─────────────────────┘        └─────────────────────┘
+
+
+┌──────────────────────────┐   ┌─────────────────────────────┐
+│       Competences        │   │          Quetes             │
+├──────────────────────────┤   ├─────────────────────────────┤
+│ PK  id_competence  INT AI│   │ PK  id_quete  INT AI        │
+│  *  nom_competence       │   │ UK  titre  VARCHAR(150)     │
+│       VARCHAR(100)       │   │  *  recompense_or  INT      │
+│  *  cout_mana  INT       │   │  *  niveau_requis  TINYINT  │
+│  *  degat_base  INT      │   └─────────────────────────────┘
+│  *  description_competenc│
+│       VARCHAR(255)       │
+└──────────────────────────┘
+
+
+┌─────────────────────────┐    ┌─────────────────────────┐
+│        Monstres         │    │          Loots          │
+├─────────────────────────┤    ├─────────────────────────┤
+│ PK  id_monstre  INT AI  │    │ PK  id_loot  INT AI     │
+│  *  nom  VARCHAR(150)   │    │ UK  nom_objet VARCHAR(150│
+│  *  point_vie  INT      │    │  *  rarete              │
+│  *  niveau  TINYINT     │    │     ENUM('commun',      │
+│     CHECK(1..120)       │    │      'rare','unique')   │
+└─────────────────────────┘    │  *  valeur_or  INT      │
+                               └─────────────────────────┘
+
+
+┌─────────────────────────┐    ┌──────────────────────────────────┐
+│      Configurations     │    │        ListeNoireTaverne         │
+├─────────────────────────┤    ├──────────────────────────────────┤
+│ PK  id_configuration    │    │ PK  id_liste  INT AI             │
+│     INT AI              │    │  *  duree_enJours  INT           │
+│  *  matricule VARCHAR(20│    │  *  raison  VARCHAR(255)         │
+└─────────────────────────┘    │  *  date DATETIME                │
+                               │     DEFAULT CURRENT_TIMESTAMP    │
+                               │ FK  id_heros  INT                │
+                               └──────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════════
+  TABLES DE JONCTION  (à ajouter dans ton diagramme!)
+═══════════════════════════════════════════════════════════════════════════════════
+
+┌──────────────────────────┐   ┌──────────────────────────┐   ┌──────────────────────────┐
+│    Classes_Competences   │   │      Quetes_Monstres     │   │      Monstres_Loots      │
+├──────────────────────────┤   ├──────────────────────────┤   ├──────────────────────────┤
+│ FK/PK  id_classe  INT    │   │ FK/PK  id_quete  INT     │   │ FK/PK  id_monstre  INT   │
+│ FK/PK  id_competence INT │   │ FK/PK  id_monstre  INT   │   │ FK/PK  id_loot  INT      │
+└──────────────────────────┘   └──────────────────────────┘   └──────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════════
+  RELATIONS (flèches à tracer dans draw.io)
+═══════════════════════════════════════════════════════════════════════════════════
+
+  Heros ──── FK id_classe ────────────────────────────────> Classes
+       (plusieurs héros peuvent avoir la même classe)
+       Côté Heros : N   |   Côté Classes : 1
+
+
+  Classes <──────────────────── Classes_Competences ───────────────────> Competences
+  (1 classe peut avoir plusieurs compétences, 1 compétence peut être dans plusieurs classes)
+       Côté Classes : 1   |   Côté Classes_Competences : N
+       Côté Competences : 1   |   Côté Classes_Competences : N
+
+
+  Quetes <──────────────────── Quetes_Monstres ───────────────────────> Monstres
+  (1 quête peut avoir plusieurs monstres, 1 monstre peut être dans plusieurs quêtes)
+       Côté Quetes : 1   |   Côté Quetes_Monstres : N
+       Côté Monstres : 1   |   Côté Quetes_Monstres : N
+
+
+  Monstres <─────────────────── Monstres_Loots ───────────────────────> Loots
+  (1 monstre peut donner plusieurs loots, 1 loot peut venir de plusieurs monstres)
+       Côté Monstres : 1   |   Côté Monstres_Loots : N
+       Côté Loots : 1   |   Côté Monstres_Loots : N
+
+
+  Heros ──── FK id_heros ──────────────────────────────────> ListeNoireTaverne
+  (1 héros peut être banni plusieurs fois)
+       Côté Heros : 1   |   Côté ListeNoireTaverne : N
+
+
+  Configurations : table ISOLÉE, aucune relation
+
+
+═══════════════════════════════════════════════════════════════════════════════════
+  SCHÉMA GLOBAL (disposition suggérée dans draw.io)
+═══════════════════════════════════════════════════════════════════════════════════
+
+   ┌──────────┐       ┌──────────────────────┐       ┌─────────────┐
+   │  Classes │───────│  Classes_Competences  │───────│ Competences │
+   └──────────┘       └──────────────────────┘       └─────────────┘
+        │
+        │ (FK id_classe)
+        ▼
+   ┌──────────┐       ┌────────────────────┐
+   │  Heros   │──────▶│  ListeNoireTaverne │
+   └──────────┘       └────────────────────┘
+
+   ┌──────────┐       ┌──────────────────────┐       ┌─────────────┐
+   │  Quetes  │───────│   Quetes_Monstres    │───────│  Monstres   │
+   └──────────┘       └──────────────────────┘       └─────────────┘
+                                                           │
+                                              ┌────────────────────┐
+                                              │   Monstres_Loots   │
+                                              └────────────────────┘
+                                                           │
+                                                      ┌─────────┐
+                                                      │  Loots  │
+                                                      └─────────┘
+
+   ┌────────────────┐
+   │ Configurations │  (isolée, aucune relation)
+   └────────────────┘
