@@ -3,108 +3,264 @@
 
 TP2 SQL 2026
 ÉCRIVEZ VOTRE MATRICULE SUR LA LIGNE SUIVANTE:
-
+2539709
 
 */
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Code de création de la table Heros
+CREATE TABLE IF NOT EXISTS Heros (
+    id_heros INT NOT NULL AUTO_INCREMENT,
+    nom VARCHAR(100) NOT NULL,
+    niveau TINYINT NOT NULL,
+    id_classe INT NOT NULL,
 
-
+    CONSTRAINT PRIMARY KEY (id_heros)
+);
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Code de création de la table Classes
+CREATE TABLE IF NOT EXISTS Classes (
+    id_classe INT NOT NULL AUTO_INCREMENT,
+    nom_classe VARCHAR(100) NOT NULL,
+    description VARCHAR(255) NOT NULL,
 
-
+    CONSTRAINT PRIMARY KEY (id_classe)
+);
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Code de création de la table Competences
+CREATE TABLE IF NOT EXISTS Competences (
+    id_competence INT NOT NULL AUTO_INCREMENT,
+    nom_competence VARCHAR(100) NOT NULL,
+    cout_mana INT NOT NULL,
+    degat_base INT NOT NULL,
+    description_competence VARCHAR(255) NOT NULL,
 
-
+    CONSTRAINT PRIMARY KEY (id_competence)
+);
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Code de création de la table Quetes
+CREATE TABLE IF NOT EXISTS Quetes (
+    id_quete INT NOT NULL AUTO_INCREMENT,
+    titre VARCHAR(150) NOT NULL,
+    recompense_or INT NOT NULL,
+    niveau_requis TINYINT NOT NULL,
 
-
+    CONSTRAINT PRIMARY KEY (id_quete),
+    CONSTRAINT unq_titre UNIQUE (titre)
+);
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Code de création de la table Loots
+CREATE TABLE IF NOT EXISTS Loots (
+    id_loot INT NOT NULL AUTO_INCREMENT,
+    nom_objet VARCHAR(150) NOT NULL,
+    rarete ENUM('commun', 'rare', 'unique') NOT NULL,
+    valeur_or INT NOT NULL,
 
-
+    CONSTRAINT PRIMARY KEY (id_loot),
+    CONSTRAINT unq_nom_objet UNIQUE (nom_objet)
+);
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Code de création de la table Monstres
+CREATE TABLE IF NOT EXISTS Monstres (
+    id_monstre INT NOT NULL AUTO_INCREMENT,
+    nom VARCHAR(150) NOT NULL,
+    point_vie INT NOT NULL,
+    niveau TINYINT NOT NULL,
 
-
+    CONSTRAINT PRIMARY KEY (id_monstre)
+);
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Code de création de la table Configurations
+CREATE TABLE IF NOT EXISTS Configurations (
+    id_configuration INT NOT NULL AUTO_INCREMENT,
+    matricule VARCHAR(20) NOT NULL,
 
-
+    CONSTRAINT PRIMARY KEY (id_configuration)
+);
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Code de création de la table ListeNoireTaverne
+CREATE TABLE IF NOT EXISTS ListeNoireTaverne (
+    id_liste INT NOT NULL AUTO_INCREMENT,
+    duree_enJours INT NOT NULL,
+    raison VARCHAR(255) NOT NULL,
+    `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id_heros INT NOT NULL,
 
-
+    CONSTRAINT PRIMARY KEY (id_liste)
+);
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Code de création des autres tables si nécessaire
+CREATE TABLE IF NOT EXISTS Classes_Competences (
+    id_classe INT NOT NULL,
+    id_competence INT NOT NULL,
 
+    CONSTRAINT PRIMARY KEY (id_classe, id_competence)
+);
 
+CREATE TABLE IF NOT EXISTS Quetes_Monstres (
+    id_quete INT NOT NULL,
+    id_monstre INT NOT NULL,
+
+    CONSTRAINT PRIMARY KEY (id_quete, id_monstre)
+);
+
+CREATE TABLE IF NOT EXISTS Monstres_Loots (
+    id_monstre INT NOT NULL,
+    id_loot INT NOT NULL,
+
+    CONSTRAINT PRIMARY KEY (id_monstre, id_loot)
+);
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Code pour les contraintes supplémentaires ou si vous
 -- préférez les faire après la création des tables.
 
+ALTER TABLE Heros
+ADD CONSTRAINT chk_niveau_heros CHECK (niveau BETWEEN 1 AND 99);
 
+ALTER TABLE Monstres
+ADD CONSTRAINT chk_niveau_monstres CHECK (niveau BETWEEN 1 AND 120);
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Les ALTER TABLES si nécessaire
 
+ALTER TABLE Heros
+ADD CONSTRAINT fk_heros_classes FOREIGN KEY (id_classe) REFERENCES Classes(id_classe);
 
+ALTER TABLE ListeNoireTaverne
+ADD CONSTRAINT fk_listenoiretaverne_heros FOREIGN KEY (id_heros) REFERENCES Heros(id_heros);
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - -
--- Le INSERT de la table Heros
+ALTER TABLE Classes_Competences
+ADD CONSTRAINT fk_classescompetences_classes FOREIGN KEY (id_classe) REFERENCES Classes(id_classe);
 
+ALTER TABLE Classes_Competences
+ADD CONSTRAINT fk_classescompetences_competences FOREIGN KEY (id_competence) REFERENCES Competences(id_competence);
 
+ALTER TABLE Quetes_Monstres
+ADD CONSTRAINT fk_quetesmonstres_quetes FOREIGN KEY (id_quete) REFERENCES Quetes(id_quete);
+
+ALTER TABLE Quetes_Monstres
+ADD CONSTRAINT fk_quetesmonstres_monstres FOREIGN KEY (id_monstre) REFERENCES Monstres(id_monstre);
+
+ALTER TABLE Monstres_Loots
+ADD CONSTRAINT fk_monstresloots_monstres FOREIGN KEY (id_monstre) REFERENCES Monstres(id_monstre);
+
+ALTER TABLE Monstres_Loots
+ADD CONSTRAINT fk_monstresloots_loots FOREIGN KEY (id_loot) REFERENCES Loots(id_loot);
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Le INSERT de la table Classes
 
+INSERT INTO Classes (nom_classe, description) VALUES
+('Guerrier', 'Spécialiste du combat au corps à corps, très résistant.'),
+('Mage', 'Maître de la magie arcanique, utilise des sorts puissants.'),
+('Archer', 'Expert du tir à l\'arc, très précis à longue distance.'),
+('Voleur', 'Qui se spécialise dans le vol d\'objet. Est très agile et ne fait pas de bruit.'),
+('Barde', 'Musicien itinérant aux pouvoirs magiques, inspire ses alliés.');
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - -
+-- Le INSERT de la table Heros
+
+INSERT INTO Heros (nom, niveau, id_classe) VALUES
+('Aragorn', 15, 1),
+('Gandalf', 99, 2),
+('Legolas', 45, 3),
+('Bilbon', 12, 4),
+('Gimli', 30, 1);
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Le INSERT de la table Competences
 
-
+INSERT INTO Competences (nom_competence, cout_mana, degat_base, description_competence) VALUES
+('Boule de feu', 4, 10, 'Il suffit de crier boule de feu et une boule de flamme sort de vos mains.'),
+('Téléportation', 10, 0, 'Permet de se téléporter à environ 30 mètres plus loin.'),
+('Coup puissant', 2, 25, 'Un coup d\'épée dévastateur qui fait reculer l\'ennemi.'),
+('Tir de précision', 3, 15, 'Un tir ciblé sur un point faible de l\'ennemi.'),
+('Pickpocket', 1, 0, 'Vole discrètement un objet dans l\'inventaire de la cible.');
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Le INSERT de la table Quetes
 
-
+INSERT INTO Quetes (titre, recompense_or, niveau_requis) VALUES
+('Mais où est Charlie?', 22, 2),
+('Colis perdu de Pirolateur', 110, 5),
+('La grotte du dragon', 500, 30),
+('Sauver la princesse', 300, 20),
+('Cueillette d\'herbes magiques', 50, 8);
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Le INSERT de la table Loots
 
-
+INSERT INTO Loots (nom_objet, rarete, valeur_or) VALUES
+('Épée maître', 'unique', 69420),
+('Pioche en diamant', 'rare', 9001),
+('Pokéball', 'commun', 200),
+('Potion de soin', 'commun', 50),
+('Arc elfique', 'rare', 1500);
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Le INSERT de la table Monstres
 
-
+INSERT INTO Monstres (nom, point_vie, niveau) VALUES
+('Dragon blanc aux yeux bleus', 2500, 80),
+('Baie de Tom', 67, 13),
+('Le Monarque des Tortues de Plomberie', 888, 50),
+('Gobelin', 45, 3),
+('Troll des cavernes', 350, 25);
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Le INSERT de la table Configurations
 
-
+INSERT INTO Configurations (matricule) VALUES
+('0123456'),
+('1234567'),
+('6742069'),
+('9876543'),
+('1111111');
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Le INSERT de la table ListeNoireTaverne
 
-
+INSERT INTO ListeNoireTaverne (duree_enJours, raison, id_heros) VALUES
+(67, 'A échoué de voler 13 fois le pauvre mixologue.', 4),
+(666, 'A cassé tous les petits pots en céramique dans l\'espoir de trouver des rubis verts.', 2),
+(30, 'A provoqué une bagarre avec 3 gardes en même temps.', 1),
+(14, 'A tiré des flèches sur les lustres en cristal de la taverne.', 3),
+(7, 'A renversé intentionnellement tous les tonneaux de bière.', 5);
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 -- Les INSERT pour vos autres tables si nécessaire
 
+INSERT INTO Classes_Competences (id_classe, id_competence) VALUES
+(1, 3),
+(2, 1),
+(2, 2),
+(3, 4),
+(4, 5),
+(5, 2),
+(1, 5);
 
+INSERT INTO Quetes_Monstres (id_quete, id_monstre) VALUES
+(1, 2),
+(2, 4),
+(3, 1),
+(4, 5),
+(5, 2),
+(3, 3);
+
+INSERT INTO Monstres_Loots (id_monstre, id_loot) VALUES
+(1, 1),
+(1, 2),
+(2, 4),
+(3, 3),
+(4, 4),
+(5, 5);
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
