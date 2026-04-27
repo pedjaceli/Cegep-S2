@@ -1056,3 +1056,46 @@ Start IP     : 192.168.140.9
 Subnet Mask  : 255.255.255.0
 Max Users    : 100
 WLC Address  : 192.168.140.200
+---------------------------------------------
+
+=============================================
+WLC - REAL Configuration
+=============================================
+!MultiLayerSwitch0
+enable
+configure terminal
+
+interface range FastEthernet 0/7 - 11
+no switchport access vlan 139
+shutdown
+exit
+---------------------------------------------
+interface GigabitEthernet 0/2
+switchport trunk encapsulation dot1q
+switchport mode trunk
+no shutdown
+exit
+----------------------------------------------
+Username	admin
+Password	Admin123456!
+System Name	WLC-Etage1
+Management IP	192.168.139.200
+Subnet Mask	255.255.255.0
+Default Gateway	192.168.139.1
+SSID	WiFi-Pogoville-Public
+Security	WPA2 Personal
+Passphrase	skj@4#645*
+-----------------------------------------------
+!Server0
+IP Address  : 192.168.139.3
+Subnet Mask : 255.255.255.0
+Gateway     : 192.168.139.1
+DNS         : 192.168.119.2
+
+Pool Name  : WLC-Pool
+Default GW : 192.168.139.1
+DNS        : 192.168.119.2
+Start IP   : 192.168.139.9
+Subnet     : 255.255.255.0
+Max Users  : 100
+WLC address : 192.168.139.200
