@@ -1086,7 +1086,7 @@ SSID	WiFi-Pogoville-Public
 Security	WPA2 Personal
 Passphrase	skj@4#645*
 -----------------------------------------------
-!Server0
+!ServerWLC1
 IP Address  : 192.168.139.3
 Subnet Mask : 255.255.255.0
 Gateway     : 192.168.139.1
@@ -1099,3 +1099,126 @@ Start IP   : 192.168.139.9
 Subnet     : 255.255.255.0
 Max Users  : 100
 WLC address : 192.168.139.200
+------------------------------------------------
+!Sur la switch13
+enable
+configure terminal
+interface GigabitEthernet 0/1
+switchport mode trunk
+exit
+------------------------------------------------
+!Sur la MultiLayerSwitch0
+enable
+configure terminal
+interface GigabitEthernet 0/2
+switchport trunk encapsulation dot1q
+switchport mode trunk
+no shutdown
+exit
+-------------------------------------------------
+!MultiLayerSwitch1
+vlan 140
+name WiFi_Public
+exit
+
+interface vlan 140
+ip address 192.168.140.1 255.255.255.0
+no shutdown
+exit
+
+ip dhcp excluded-address 192.168.140.1 192.168.140.8
+ip dhcp excluded-address 192.168.140.110 192.168.140.254
+
+ip dhcp pool vlan140
+network 192.168.140.0 255.255.255.0
+default-router 192.168.140.1
+dns-server 192.168.119.2
+exit
+
+router ospf 1
+network 192.168.140.0 0.0.0.255 area 0
+exit
+
+interface GigabitEthernet 0/2
+switchport trunk encapsulation dot1q
+switchport mode trunk
+no shutdown
+exit
+--------------------------------------------------------
+System Name	WLC-Etage2
+Management IP	192.168.140.200
+Subnet Mask	255.255.255.0
+Default Gateway	192.168.140.1
+Management VLAN	140
+SSID	WiFi-Pogoville-Public
+Security	WPA2 Personal
+Passphrase	skj@4#645*
+--------------------------------------------------------
+!ServerWlC2
+DHCP
+IP         : 192.168.140.3
+Gateway    : 192.168.140.1
+DNS        : 192.168.119.2
+Pool Start : 192.168.140.9
+Max Users  : 100
+WLC Address: 192.168.140.200
+---------------------------------------------------------
+IP Address  : 192.168.140.3
+Subnet Mask : 255.255.255.0
+Gateway     : 192.168.140.1
+DNS Server  : 192.168.119.2
+----------------------------------------------------------
+!Switch14
+vlan 140
+name WiFi_Public
+exit
+
+interface FastEthernet 0/1
+switchport mode access
+switchport access vlan 140
+exit
+
+interface FastEthernet 0/2
+switchport mode access
+switchport access vlan 140
+exit
+
+interface FastEthernet 0/3
+switchport mode access
+switchport access vlan 140
+exit
+
+enable
+configure terminal
+interface GigabitEthernet 0/1
+switchport mode access
+switchport access vlan 140
+exit
+write
+-----------------------------------------------------------------
+
+=================================================================
+NAT
+=================================================================
+!Router2
+enable
+configure terminal
+
+! Interface vers les serveurs (sub-interfaces)
+interface GigabitEthernet 0/0/0.119
+ip nat inside
+exit
+interface GigabitEthernet 0/0/0.129
+ip nat inside
+exit
+! Interface vers Router1 (réseau interne)
+interface GigabitEthernet 0/0/1
+ip nat inside
+exit
+! Interface vers RouterISP (internet) = OUTSIDE
+interface GigabitEthernet 0/0/2
+ip nat outside
+exit
+access-list 1 permit 192.168.0.0 0.0.255.255
+ip nat inside source list 1 interface GigabitEthernet0/0/2 overload
+write

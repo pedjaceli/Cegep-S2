@@ -1,0 +1,180 @@
+! -----------------------------------------------
+! Router Etage 1
+! -----------------------------------------------
+
+! ########## Classes Informatiques VLAN 9 ##########
+! Permettre serveurs publics
+access-list 100 remark Classes Info Serveurs publics
+access-list 100 permit ip 192.168.9.0 0.0.0.255 192.168.119.0 0.0.0.255
+
+! Permettre info.ftp serveur prive
+access-list 100 remark Classes Info info.ftp prive
+access-list 100 permit ip 192.168.9.0 0.0.0.255 host 192.168.129.4
+
+! Permettre imprimantes
+access-list 100 remark Classes Info Imprimantes
+access-list 100 permit ip 192.168.9.0 0.0.0.255 host 192.168.59.9
+
+! Bloquer le reste du reseau local
+access-list 100 remark Classes Info Bloquer reseau local
+access-list 100 deny ip 192.168.9.0 0.0.0.255 192.168.0.0 0.0.255.255
+
+! Permettre internet
+access-list 100 remark Classes Info Internet
+access-list 100 permit ip 192.168.9.0 0.0.0.255 any
+
+!-----------------------------------------------------------------------
+! ########## Enseignants Informatique VLAN 29 ##########
+! Permettre serveurs publics
+access-list 100 remark Ens Info Serveurs publics
+access-list 100 permit ip 192.168.29.0 0.0.0.255 192.168.119.0 0.0.0.255
+
+! Permettre serveurs prives
+access-list 100 remark Ens Info employes.pogoville.ca
+access-list 100 permit ip 192.168.29.0 0.0.0.255 host 192.168.129.3
+
+access-list 100 remark Ens Info info.ftp.pogoville.ca
+access-list 100 permit ip 192.168.29.0 0.0.0.255 host 192.168.129.4
+
+access-list 100 remark Ens Info info.ssh.pogoville.ca
+access-list 100 permit ip 192.168.29.0 0.0.0.255 host 192.168.129.5
+
+! Permettre imprimantes
+access-list 100 remark Ens Info Imprimantes
+access-list 100 permit ip 192.168.29.0 0.0.0.255 host 192.168.59.9
+
+! Bloquer le reste du reseau local
+access-list 100 remark Ens Info Bloquer reseau local
+access-list 100 deny ip 192.168.29.0 0.0.0.255 192.168.0.0 0.0.255.255
+
+! Permettre internet
+access-list 100 remark Ens Info Internet
+access-list 100 permit ip 192.168.29.0 0.0.0.255 any
+!-------------------------------------------------------------------------
+! ########## Classes Multimedia VLAN 19 ##########
+! Permettre serveurs publics
+access-list 100 remark Classes Multi Serveurs publics
+access-list 100 permit ip 192.168.19.0 0.0.0.255 192.168.119.0 0.0.0.255
+
+! Permettre multimedia serveur prive
+access-list 100 remark Classes Multi multimedia.pogoville.ca
+access-list 100 permit ip 192.168.19.0 0.0.0.255 host 192.168.129.6
+
+! Permettre imprimantes
+access-list 100 remark Classes Multi Imprimantes
+access-list 100 permit ip 192.168.19.0 0.0.0.255 host 192.168.59.9
+
+! Bloquer le reste du reseau local
+access-list 100 remark Classes Multi Bloquer reseau local
+access-list 100 deny ip 192.168.19.0 0.0.0.255 192.168.0.0 0.0.255.255
+
+! Permettre internet
+access-list 100 remark Classes Multi Internet
+access-list 100 permit ip 192.168.19.0 0.0.0.255 any
+!-------------------------------------------------------------------------
+! ########## Enseignants Multimedia VLAN 39 ##########
+! Permettre serveurs publics
+access-list 100 remark Ens Multi Serveurs publics
+access-list 100 permit ip 192.168.39.0 0.0.0.255 192.168.119.0 0.0.0.255
+
+! Permettre serveurs prives
+access-list 100 remark Ens Multi employes.pogoville.ca
+access-list 100 permit ip 192.168.39.0 0.0.0.255 host 192.168.129.3
+
+access-list 100 remark Ens Multi multimedia.pogoville.ca
+access-list 100 permit ip 192.168.39.0 0.0.0.255 host 192.168.129.6
+
+! Permettre imprimantes
+access-list 100 remark Ens Multi Imprimantes
+access-list 100 permit ip 192.168.39.0 0.0.0.255 host 192.168.59.9
+
+! Bloquer le reste du reseau local
+access-list 100 remark Ens Multi Bloquer reseau local
+access-list 100 deny ip 192.168.39.0 0.0.0.255 192.168.0.0 0.0.255.255
+
+! Permettre internet
+access-list 100 remark Ens Multi Internet
+access-list 100 permit ip 192.168.39.0 0.0.0.255 any
+!------------------------------------------------------------------------------
+! ########## Imprimante - host 192.168.59.9 (AVANT Directeur VLAN 59) ##########
+! Permettre VPN (a ajouter quand IP VPN est connue)
+! access-list 100 remark Imprimante VPN
+! access-list 100 permit ip host 192.168.59.9 host [IP_SERVEUR_VPN]
+
+! Bloquer serveurs publics
+access-list 100 remark Imprimante Bloquer serveurs publics
+access-list 100 deny ip host 192.168.59.9 192.168.119.0 0.0.0.255
+
+! Bloquer serveurs prives
+access-list 100 remark Imprimante Bloquer serveurs prives
+access-list 100 deny ip host 192.168.59.9 192.168.129.0 0.0.0.255
+
+! Permettre reseau local seulement
+access-list 100 remark Imprimante Reseau local
+access-list 100 permit ip host 192.168.59.9 192.168.0.0 0.0.255.255
+
+! Bloquer internet
+access-list 100 remark Imprimante Pas d'internet
+access-list 100 deny ip host 192.168.59.9 any
+!------------------------------------------------------------------------------
+! ########## Directeur Bureau Administration VLAN 59 ##########
+! Permettre serveurs publics
+access-list 100 remark Directeur Serveurs publics
+access-list 100 permit ip 192.168.59.0 0.0.0.255 192.168.119.0 0.0.0.255
+
+! Permettre serveurs prives
+access-list 100 remark Directeur octopus.pogoville.ca
+access-list 100 permit ip 192.168.59.0 0.0.0.255 host 192.168.129.2
+
+access-list 100 remark Directeur employes.pogoville.ca
+access-list 100 permit ip 192.168.59.0 0.0.0.255 host 192.168.129.3
+
+! Permettre imprimantes
+access-list 100 remark Directeur Imprimantes
+access-list 100 permit ip 192.168.59.0 0.0.0.255 host 192.168.59.9
+
+! Bloquer le reste du reseau local
+access-list 100 remark Directeur Bloquer reseau local
+access-list 100 deny ip 192.168.59.0 0.0.0.255 192.168.0.0 0.0.255.255
+
+! Pas d'internet
+access-list 100 remark Directeur Pas d'internet
+access-list 100 deny ip 192.168.59.0 0.0.0.255 any
+!------------------------------------------------------------------------
+! ########## Autres Classes - Classe Enseignement VLAN 49 ##########
+! Permettre serveurs publics
+access-list 100 remark Autres Classes VLAN49 Serveurs publics
+access-list 100 permit ip 192.168.49.0 0.0.0.255 192.168.119.0 0.0.0.255
+
+! Permettre imprimantes
+access-list 100 remark Autres Classes VLAN49 Imprimantes
+access-list 100 permit ip 192.168.49.0 0.0.0.255 host 192.168.59.9
+
+! Bloquer le reste du reseau local
+access-list 100 remark Autres Classes VLAN49 Bloquer reseau local
+access-list 100 deny ip 192.168.49.0 0.0.0.255 192.168.0.0 0.0.255.255
+
+! Permettre internet
+access-list 100 remark Autres Classes VLAN49 Internet
+access-list 100 permit ip 192.168.49.0 0.0.0.255 any
+
+! ########## Autres Classes - WiFi Public VLAN 139 ##########
+! Permettre serveurs publics
+access-list 100 remark WiFi Public VLAN139 Serveurs publics
+access-list 100 permit ip 192.168.139.0 0.0.0.255 192.168.119.0 0.0.0.255
+
+! Permettre imprimantes
+access-list 100 remark WiFi Public VLAN139 Imprimantes
+access-list 100 permit ip 192.168.139.0 0.0.0.255 host 192.168.59.9
+
+! Bloquer le reste du reseau local
+access-list 100 remark WiFi Public VLAN139 Bloquer reseau local
+access-list 100 deny ip 192.168.139.0 0.0.0.255 192.168.0.0 0.0.255.255
+
+! Permettre internet
+access-list 100 remark WiFi Public VLAN139 Internet
+access-list 100 permit ip 192.168.139.0 0.0.0.255 any
+!------------------------------------------------------------------------
+! ########## Application de l'ACL sur l'interface ##########
+interface GigabitEthernet0/0/0
+ ip access-group 100 in
